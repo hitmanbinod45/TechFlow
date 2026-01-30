@@ -896,16 +896,15 @@ class TechFlow {
                 html += `
                     <div class="ad-in-feed">
                         <!-- Google AdSense In-Feed Ad -->
-                        <!-- <ins class="adsbygoogle"
+                        <ins class="adsbygoogle"
                              style="display:block"
                              data-ad-format="fluid"
                              data-ad-layout-key="-fb+5w+4e-db+86"
-                             data-ad-client="ca-pub-XXXXXXXXXX"
-                             data-ad-slot="XXXXXXXXXX"></ins>
+                             data-ad-client="ca-pub-2748936924147"
+                             data-ad-slot="9876543210"></ins>
                         <script>
                              (adsbygoogle = window.adsbygoogle || []).push({});
-                        </script> -->
-                        <div style="color: var(--text-muted); font-size: 0.8rem;">Advertisement</div>
+                        </script>
                     </div>
                 `;
             }
