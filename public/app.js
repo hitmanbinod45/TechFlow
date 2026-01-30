@@ -289,7 +289,7 @@ class TechFlow {
         this.refreshBtn.classList.add('loading');
         
         try {
-            const response = await fetch('/api/articles/refresh');
+            const response = await fetch('/api/refresh');
             if (!response.ok) throw new Error('Failed to refresh articles');
             
             const articles = await response.json();
