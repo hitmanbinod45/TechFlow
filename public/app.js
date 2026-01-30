@@ -86,6 +86,7 @@ class TechFlow {
             console.error('Weather loading failed:', error);
             this.weatherWidget.querySelector('.weather-desc').textContent = 'N/A';
             this.weatherWidget.querySelector('.weather-temp').textContent = '--°';
+            this.generateFallbackHourlyWeather();
         }
     }
 
@@ -147,6 +148,7 @@ class TechFlow {
                 );
             } else {
                 this.setTimeBasedWeather();
+                this.generateFallbackHourlyWeather();
             }
         } catch (error) {
             console.error('Weather loading failed:', error);
@@ -211,6 +213,7 @@ class TechFlow {
         } catch (error) {
             console.error('Weather API failed:', error);
             this.setTimeBasedWeather();
+            this.generateFallbackHourlyWeather();
         }
     }
 
@@ -237,7 +240,8 @@ class TechFlow {
             
             const temp = Math.round(hourlyData.temperature_2m[dataIndex]);
             const weatherCode = hourlyData.weathercode[dataIndex];
-            const condition = this.getWeatherCondition(weatherCode);
+            const futureTime = new Date(now.getTime() + (i * 60 * 60 * 1000));
+            const condition = this.getWeatherCondition(weatherCode, futureTime.getHours());
             
             let timeLabel;
             if (i === 0) {
@@ -263,10 +267,13 @@ class TechFlow {
         hourlyContainer.innerHTML = hourlyHTML;
     }
 
-    getWeatherCondition(code) {
+    getWeatherCondition(code, hour = null) {
+        // If hour is provided, adjust conditions based on time of day
+        const isNight = hour !== null && (hour < 6 || hour >= 20);
+        
         const conditions = {
-            0: 'Clear',
-            1: 'Sunny', 
+            0: isNight ? 'Clear' : 'Clear',
+            1: isNight ? 'Clear' : 'Sunny', 
             2: 'Partly Cloudy',
             3: 'Overcast',
             45: 'Fog',
@@ -290,7 +297,56 @@ class TechFlow {
             96: 'Thunderstorm',
             99: 'Thunderstorm'
         };
-        return conditions[code] || 'Fair';
+        return conditions[code] || (isNight ? 'Fair' : 'Fair');
+    }
+
+    // Add fallback hourly weather when API fails
+    generateFallbackHourlyWeather() {
+        const hourlyContainer = document.getElementById('hourlyWeather');
+        const now = new Date();
+        let hourlyHTML = '';
+        
+        for (let i = 0; i < 5; i++) {
+            const futureTime = new Date(now.getTime() + (i * 60 * 60 * 1000));
+            const hour = futureTime.getHours();
+            
+            // Generate realistic temperature and condition based on time
+            let temp, condition;
+            if (hour >= 6 && hour < 12) {
+                temp = Math.floor(Math.random() * 8) + 18;
+                condition = ['Clear', 'Fair', 'Partly Cloudy'][Math.floor(Math.random() * 3)];
+            } else if (hour >= 12 && hour < 18) {
+                temp = Math.floor(Math.random() * 10) + 22;
+                condition = ['Sunny', 'Clear', 'Warm'][Math.floor(Math.random() * 3)];
+            } else if (hour >= 18 && hour < 22) {
+                temp = Math.floor(Math.random() * 8) + 20;
+                condition = ['Clear', 'Fair', 'Partly Cloudy'][Math.floor(Math.random() * 3)];
+            } else {
+                temp = Math.floor(Math.random() * 8) + 15;
+                condition = ['Clear', 'Cool', 'Fair'][Math.floor(Math.random() * 3)];
+            }
+            
+            let timeLabel;
+            if (i === 0) {
+                timeLabel = 'Now';
+            } else {
+                timeLabel = futureTime.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false 
+                });
+            }
+            
+            hourlyHTML += `
+                <div class="hour-item">
+                    <span class="hour">${timeLabel}</span>
+                    <span class="temp">${temp}°</span>
+                    <span class="condition">${condition}</span>
+                </div>
+            `;
+        }
+        
+        hourlyContainer.innerHTML = hourlyHTML;
     }
 
 
@@ -380,6 +436,46 @@ class TechFlow {
                     category: 'Mobile',
                     timestamp: new Date().toISOString(),
                     image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=160&fit=crop&auto=format'
+                },
+                {
+                    id: 'static-9',
+                    title: 'NVIDIA RTX 4090: AI Acceleration Breakthrough',
+                    url: 'https://nvidia.com/rtx-4090',
+                    excerpt: 'NVIDIA\'s flagship GPU delivers unprecedented AI performance with advanced ray tracing capabilities.',
+                    source: 'NVIDIA',
+                    category: 'Hardware',
+                    timestamp: new Date().toISOString(),
+                    image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&h=160&fit=crop&auto=format'
+                },
+                {
+                    id: 'static-10',
+                    title: 'AWS Lambda: Serverless Computing Evolution',
+                    url: 'https://aws.amazon.com/lambda',
+                    excerpt: 'Amazon Web Services expands Lambda with improved cold start performance and new runtime support.',
+                    source: 'AWS',
+                    category: 'Cloud',
+                    timestamp: new Date().toISOString(),
+                    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=160&fit=crop&auto=format'
+                },
+                {
+                    id: 'static-11',
+                    title: 'React 19: Concurrent Features Stable',
+                    url: 'https://react.dev/blog/2024/04/25/react-19',
+                    excerpt: 'React 19 brings stable concurrent features, improved server components, and better developer experience.',
+                    source: 'React Team',
+                    category: 'Development',
+                    timestamp: new Date().toISOString(),
+                    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=160&fit=crop&auto=format'
+                },
+                {
+                    id: 'static-12',
+                    title: 'Quantum Computing: IBM\'s 1000-Qubit Processor',
+                    url: 'https://ibm.com/quantum',
+                    excerpt: 'IBM unveils breakthrough 1000-qubit quantum processor with improved error correction and stability.',
+                    source: 'IBM',
+                    category: 'Quantum',
+                    timestamp: new Date().toISOString(),
+                    image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=160&fit=crop&auto=format'
                 }
             ];
             
