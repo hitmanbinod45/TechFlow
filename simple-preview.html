@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechFlow - Latest Tech News & Updates</title>
+    <meta name="description" content="Stay updated with the latest smartphone and tech news from top sources and Twitter">
+    <meta name="theme-color" content="#6366f1">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #f59e0b;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #475569;
+            --success: #10b981;
+            --error: #ef4444;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .demo-notice {
+            background: linear-gradient(135deg, var(--secondary-color), #f97316);
+            color: white;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .twitter-card {
+            border-left: 4px solid #1da1f2;
+        }
+
+        .news-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--surface-light), var(--border));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--text-muted);
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-category {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .twitter-card .news-category {
+            background: #1da1f2;
+        }
+
+        .news-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .news-source {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .source-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .news-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .install-prompt {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            right: 2rem;
+            max-width: 400px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .install-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .dismiss-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            margin-left: auto;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .main {
+                padding: 1.5rem 1rem;
+            }
+            
+            .news-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+            }
+            
+            .filters {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-notice">
+        🚀 DEMO VERSION - Install Node.js and run "npm install && npm start" for live news feeds from TechCrunch, The Verge & Twitter
+    </div>
+
+    <div id="app">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">📱</span>
+                    <span>TechFlow</span>
+                </div>
+                <div class="header-actions">
+                    <button class="refresh-btn" onclick="showMessage()">
+                        <span>🔄</span>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Articles</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Sources</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">Live</div>
+                    <div class="stat-label">Updates</div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active">All News</button>
+                <button class="filter-btn">Tech News</button>
+                <button class="filter-btn">Twitter/X</button>
+                <button class="filter-btn">Smartphones</button>
+                <button class="filter-btn">Reviews</button>
+            </div>
+
+            <div class="news-grid">
+                <!-- Tech News Cards -->
+                <article class="news-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">📱</div>
+                    <div class="news-content">
+                        <span class="news-category">Smartphones</span>
+                        <h2 class="news-title">iPhone 16 Pro Max Review: Revolutionary Camera Technology</h2>
+                        <p class="news-excerpt">Apple's latest flagship brings unprecedented camera improvements with AI-powered photography, faster A18 Pro chip, and enhanced battery life that sets new industry standards...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">🚀</span>
+                                <span>TechCrunch</span>
+                            </div>
+                            <span class="news-time">2h ago</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="news-card twitter-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">🐦</div>
+                    <div class="news-content">
+                        <span class="news-category">Social Media</span>
+                        <h2 class="news-title">@elonmusk: Neural interfaces will revolutionize smartphones</h2>
+                        <p class="news-excerpt">The future of smartphones is here with neural interfaces. Direct brain-computer interaction will completely change how we communicate and interact with technology...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">🐦</span>
+                                <span>Twitter (@elonmusk)</span>
+                            </div>
+                            <span class="news-time">1h ago</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="news-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">🤖</div>
+                    <div class="news-content">
+                        <span class="news-category">Software</span>
+                        <h2 class="news-title">Android 15 Beta: Enhanced Privacy and AI Integration</h2>
+                        <p class="news-excerpt">Google's latest Android version introduces groundbreaking privacy controls, improved AI assistance, and better battery optimization. The beta is now available for Pixel devices...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">⚡</span>
+                                <span>The Verge</span>
+                            </div>
+                            <span class="news-time">3h ago</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="news-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">⚡</div>
+                    <div class="news-content">
+                        <span class="news-category">Tech News</span>
+                        <h2 class="news-title">Samsung Galaxy S25 Ultra: 200MP Camera Leaked Specs</h2>
+                        <p class="news-excerpt">New leaks reveal Samsung's upcoming flagship will feature a revolutionary 200MP main camera, improved S Pen functionality, and faster charging capabilities that rival competitors...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">🚀</span>
+                                <span>TechCrunch</span>
+                            </div>
+                            <span class="news-time">4h ago</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="news-card twitter-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">🤖</div>
+                    <div class="news-content">
+                        <span class="news-category">Social Media</span>
+                        <h2 class="news-title">@sundarpichai: Android 15 brings unprecedented AI capabilities</h2>
+                        <p class="news-excerpt">Android 15 brings unprecedented AI capabilities to your smartphone. Privacy-first AI that works entirely on-device, ensuring your data stays secure while providing intelligent assistance...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">🐦</span>
+                                <span>Twitter (@sundarpichai)</span>
+                            </div>
+                            <span class="news-time">5h ago</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="news-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">🔋</div>
+                    <div class="news-content">
+                        <span class="news-category">Tech News</span>
+                        <h2 class="news-title">Revolutionary Battery Tech Could Double Smartphone Life</h2>
+                        <p class="news-excerpt">Scientists develop new lithium-silicon battery technology that could dramatically extend smartphone battery life while reducing charging times to under 15 minutes for full charge...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">⚡</span>
+                                <span>The Verge</span>
+                            </div>
+                            <span class="news-time">6h ago</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="news-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">🎮</div>
+                    <div class="news-content">
+                        <span class="news-category">Reviews</span>
+                        <h2 class="news-title">Google Pixel 9 Pro: AI Photography Reaches New Heights</h2>
+                        <p class="news-excerpt">Google's latest Pixel smartphone showcases the future of computational photography with advanced AI features that make every shot perfect, even in challenging conditions...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">⚡</span>
+                                <span>The Verge</span>
+                            </div>
+                            <span class="news-time">8h ago</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="news-card" onclick="showMessage()">
+                    <div class="news-image-placeholder">🚀</div>
+                    <div class="news-content">
+                        <span class="news-category">Tech News</span>
+                        <h2 class="news-title">Snapdragon Chip Brings Console Gaming to Mobile</h2>
+                        <p class="news-excerpt">Qualcomm's latest Snapdragon processor brings console-quality gaming to smartphones with ray tracing support and 120fps gameplay capabilities that rival desktop performance...</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <span class="source-icon">🚀</span>
+                                <span>TechCrunch</span>
+                            </div>
+                            <span class="news-time">12h ago</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </main>
+
+        <div class="install-prompt">
+            <div>
+                <strong>Install TechFlow PWA</strong>
+                <p>Get instant access to tech news on your home screen!</p>
+            </div>
+            <button class="install-btn" onclick="showMessage()">Install</button>
+            <button class="dismiss-btn" onclick="this.parentElement.style.display='none'">×</button>
+        </div>
+    </div>
+
+    <script>
+        function showMessage() {
+            alert('🚀 This is a demo! Install Node.js and run "npm install && npm start" to get:\n\n✅ Live news from TechCrunch & The Verge\n✅ Real Twitter/X tech updates\n✅ Auto-refresh every 30 minutes\n✅ Full PWA functionality\n✅ Offline support');
+        }
+
+        // Add some interactivity to filters
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    showMessage();
+                });
+            });
+            
+            console.log('🚀 TechFlow Demo Loaded');
+            console.log('📱 To run the full version with live feeds:');
+            console.log('1. Install Node.js from https://nodejs.org/');
+            console.log('2. Run: npm install');
+            console.log('3. Run: npm start');
+            console.log('4. Open: http://localhost:3000');
+        });
+    </script>
+</body>
+</html>
