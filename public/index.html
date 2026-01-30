@@ -18,6 +18,20 @@
         gtag('js', new Date());
         gtag('config', 'GA_MEASUREMENT_ID');
     </script> -->
+    
+    <!-- Google AdSense (replace with your actual AdSense code) -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script> -->
+    
+    <!-- Simple Analytics for Ad Performance -->
+    <script>
+        // Track page views for ad revenue calculation
+        if (typeof(Storage) !== "undefined") {
+            let pageViews = parseInt(localStorage.getItem('pageViews') || '0');
+            pageViews++;
+            localStorage.setItem('pageViews', pageViews.toString());
+            localStorage.setItem('lastVisit', new Date().toISOString());
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -309,6 +323,20 @@
             </div>
 
             <div class="articles-grid" id="articlesGrid" style="display: none;">
+                <!-- Top Banner Ad -->
+                <div class="ad-banner-top">
+                    <!-- Google AdSense Banner Ad -->
+                    <!-- <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-XXXXXXXXXX"
+                         data-ad-slot="XXXXXXXXXX"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script> -->
+                </div>
+                
                 <!-- Articles will be inserted here -->
             </div>
 

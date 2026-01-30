@@ -640,6 +640,44 @@ body {
     text-decoration: underline;
 }
 
+/* Ad Styles */
+.ad-banner-top {
+    grid-column: 1 / -1;
+    margin: 1rem 0;
+    text-align: center;
+    min-height: 90px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ad-sidebar {
+    position: sticky;
+    top: 2rem;
+    width: 300px;
+    height: 250px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ad-in-feed {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .container {

@@ -888,7 +888,30 @@ class TechFlow {
             return;
         }
 
-        this.articlesGrid.innerHTML = validArticles.map(article => this.createArticleCard(article)).join('');
+        this.articlesGrid.innerHTML = validArticles.map((article, index) => {
+            let html = this.createArticleCard(article);
+            
+            // Add in-feed ad after every 4th article
+            if ((index + 1) % 4 === 0 && index < validArticles.length - 1) {
+                html += `
+                    <div class="ad-in-feed">
+                        <!-- Google AdSense In-Feed Ad -->
+                        <!-- <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-format="fluid"
+                             data-ad-layout-key="-fb+5w+4e-db+86"
+                             data-ad-client="ca-pub-XXXXXXXXXX"
+                             data-ad-slot="XXXXXXXXXX"></ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script> -->
+                        <div style="color: var(--text-muted); font-size: 0.8rem;">Advertisement</div>
+                    </div>
+                `;
+            }
+            
+            return html;
+        }).join('');
         this.articlesGrid.style.display = 'grid';
         
         // Add click handlers
