@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://tech-flow-sigma.vercel.app/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /.git/
+Disallow: /node_modules/
+
+# Allow important files
+Allow: /ads.txt
+Allow: /sitemap.xml

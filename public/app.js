@@ -24,6 +24,18 @@ class TechFlow {
         this.loadArticles();
         this.initTheme();
         this.initWeatherAndTime();
+        
+        // Auto-refresh articles every 30 minutes
+        setInterval(() => {
+            console.log('Auto-refreshing articles...');
+            this.loadArticles();
+        }, 30 * 60 * 1000); // 30 minutes
+        
+        // Auto-refresh weather every hour
+        setInterval(() => {
+            console.log('Auto-refreshing weather...');
+            this.loadConsistentWeather();
+        }, 60 * 60 * 1000); // 1 hour
     }
 
     bindEvents() {
@@ -853,46 +865,46 @@ class TechFlow {
         
         console.log('Raw articles received:', articles.length);
         
-        // More aggressive filtering and fallback system
+        // Very strict filtering to prevent empty cards
         let validArticles = articles.filter(article => {
             const hasTitle = article && article.title && article.title.trim() && 
                            article.title.trim() !== 'Untitled Article' && 
-                           article.title.trim().length > 5;
+                           article.title.trim() !== '' &&
+                           article.title.trim().length > 10;
             const hasExcerpt = article && article.excerpt && article.excerpt.trim() && 
                              article.excerpt.trim() !== 'No description available for this article.' &&
-                             article.excerpt.trim().length > 10;
+                             article.excerpt.trim() !== '' &&
+                             article.excerpt.trim().length > 20;
             const hasUrl = article && article.url && article.url !== '#' && article.url.startsWith('http');
-            const hasSource = article && article.source && article.source.trim();
+            const hasSource = article && article.source && article.source.trim() && article.source.trim() !== '';
+            const hasImage = article && article.image && article.image.startsWith('http');
             
-            return hasTitle && hasExcerpt && hasUrl && hasSource;
+            return hasTitle && hasExcerpt && hasUrl && hasSource && hasImage;
         });
         
         console.log(`Filtered to ${validArticles.length} valid articles`);
         
-        // If we have very few valid articles, add some guaranteed fallback content
-        if (validArticles.length < 8) {
-            console.log('Adding fallback articles due to insufficient content');
-            const fallbackArticles = this.createFallbackArticles();
-            validArticles = [...validArticles, ...fallbackArticles].slice(0, 16);
-        }
-        
+        // Only show articles that pass all validation - no empty placeholders
         if (validArticles.length === 0) {
             this.articlesGrid.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-secondary);">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">📰</div>
-                    <h3>Unable to load articles</h3>
-                    <p>There seems to be an issue with the news sources. Please try refreshing the page.</p>
+                    <h3>Loading fresh tech news...</h3>
+                    <p>Please wait while we fetch the latest articles.</p>
                 </div>
             `;
             this.articlesGrid.style.display = 'grid';
             return;
         }
 
-        this.articlesGrid.innerHTML = validArticles.map((article, index) => {
+        // Limit to exactly what we have - no padding with empty content
+        const displayArticles = validArticles.slice(0, 12);
+
+        this.articlesGrid.innerHTML = displayArticles.map((article, index) => {
             let html = this.createArticleCard(article);
             
             // Add in-feed ad after every 4th article
-            if ((index + 1) % 4 === 0 && index < validArticles.length - 1) {
+            if ((index + 1) % 4 === 0 && index < displayArticles.length - 1) {
                 html += `
                     <div class="ad-in-feed">
                         <!-- Google AdSense In-Feed Ad -->
