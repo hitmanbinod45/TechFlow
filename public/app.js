@@ -89,236 +89,207 @@ class TechFlow {
         this.updateTime();
         setInterval(() => this.updateTime(), 1000);
         
-        // Try to get real location-based weather first
-        await this.loadRealWeather();
+        // Load weather once and cache it
+        await this.loadConsistentWeather();
     }
 
-    async loadRealWeather() {
+    async loadConsistentWeather() {
+        // Check if we have cached weather data (valid for 30 minutes)
+        const cachedWeather = localStorage.getItem('weatherData');
+        const cacheTime = localStorage.getItem('weatherCacheTime');
+        const now = Date.now();
+        
+        if (cachedWeather && cacheTime && (now - parseInt(cacheTime)) < 30 * 60 * 1000) {
+            // Use cached data
+            const weatherData = JSON.parse(cachedWeather);
+            this.displayWeatherData(weatherData);
+            return;
+        }
+        
+        // Try to get real location-based weather
         try {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
                         const { latitude, longitude } = position.coords;
-                        await this.fetchRealWeatherByLocation(latitude, longitude);
+                        await this.fetchConsistentWeather(latitude, longitude);
                     },
                     (error) => {
-                        console.log('Location access denied, using accurate time-based weather');
-                        this.setAccurateWeather();
-                        this.generateAccurateHourlyWeather();
+                        console.log('Location access denied, using default location weather');
+                        // Use a default location (London) for consistent weather
+                        this.fetchConsistentWeather(51.5074, -0.1278);
                     }
                 );
             } else {
-                this.setAccurateWeather();
-                this.generateAccurateHourlyWeather();
+                // Use default location weather
+                this.fetchConsistentWeather(51.5074, -0.1278);
             }
         } catch (error) {
             console.error('Weather loading failed:', error);
-            this.setAccurateWeather();
-            this.generateAccurateHourlyWeather();
+            this.setFallbackWeather();
         }
     }
 
-    async fetchRealWeatherByLocation(lat, lon) {
+    async fetchConsistentWeather(lat, lon) {
         try {
             this.userLocation = { latitude: lat, longitude: lon };
             
-            // Using OpenWeatherMap API (free tier)
-            const API_KEY = 'demo'; // Using demo mode for now
+            // Using WeatherAPI.com (free tier, more reliable)
+            const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=demo&q=${lat},${lon}&days=1&aqi=no&alerts=no`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                const weatherData = {
+                    temp: Math.round(data.current.temp_c),
+                    condition: data.current.condition.text,
+                    hourly: data.forecast.forecastday[0].hour.slice(new Date().getHours(), new Date().getHours() + 5).map(hour => ({
+                        time: new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+                        temp: Math.round(hour.temp_c),
+                        condition: hour.condition.text
+                    })),
+                    location: data.location.name
+                };
+                
+                // Cache the weather data
+                localStorage.setItem('weatherData', JSON.stringify(weatherData));
+                localStorage.setItem('weatherCacheTime', Date.now().toString());
+                
+                this.displayWeatherData(weatherData);
+                return;
+            }
+            
+            // Fallback to Open-Meteo API
+            await this.fetchOpenMeteoWeather(lat, lon);
+            
+        } catch (error) {
+            console.error('WeatherAPI failed, trying Open-Meteo:', error);
+            await this.fetchOpenMeteoWeather(lat, lon);
+        }
+    }
+
+    async fetchOpenMeteoWeather(lat, lon) {
+        try {
             const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&timezone=auto&forecast_days=1`);
             
             if (response.ok) {
                 const data = await response.json();
                 
                 if (data.current_weather) {
-                    const temp = Math.round(data.current_weather.temperature);
-                    const weatherCode = data.current_weather.weathercode;
-                    const hour = new Date().getHours();
-                    const condition = this.getAccurateWeatherCondition(weatherCode, hour);
+                    const weatherData = {
+                        temp: Math.round(data.current_weather.temperature),
+                        condition: this.getWeatherConditionFromCode(data.current_weather.weathercode),
+                        hourly: this.generateHourlyFromOpenMeteo(data.hourly),
+                        location: 'Your Location'
+                    };
                     
-                    document.querySelector('.weather-temp').textContent = `${temp}°`;
-                    document.querySelector('.weather-desc').textContent = condition;
+                    // Cache the weather data
+                    localStorage.setItem('weatherData', JSON.stringify(weatherData));
+                    localStorage.setItem('weatherCacheTime', Date.now().toString());
                     
-                    // Update hourly forecast with real data
-                    this.updateRealHourlyWeather(data.hourly);
+                    this.displayWeatherData(weatherData);
                     return;
                 }
             }
             
-            // Fallback to accurate time-based weather
-            this.setAccurateWeather();
-            this.generateAccurateHourlyWeather();
+            // Final fallback
+            this.setFallbackWeather();
             
         } catch (error) {
-            console.error('Real weather API failed:', error);
-            this.setAccurateWeather();
-            this.generateAccurateHourlyWeather();
+            console.error('Open-Meteo API failed:', error);
+            this.setFallbackWeather();
         }
     }
 
-    getAccurateWeatherCondition(code, hour = null) {
-        // Determine if it's night time
-        const currentHour = hour || new Date().getHours();
-        const isNight = currentHour < 6 || currentHour >= 20;
+    generateHourlyFromOpenMeteo(hourlyData) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const hourly = [];
         
+        for (let i = 0; i < 5; i++) {
+            const hourIndex = currentHour + i;
+            if (hourIndex < hourlyData.temperature_2m.length) {
+                const futureTime = new Date(now.getTime() + (i * 60 * 60 * 1000));
+                hourly.push({
+                    time: i === 0 ? 'Now' : futureTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+                    temp: Math.round(hourlyData.temperature_2m[hourIndex]),
+                    condition: this.getWeatherConditionFromCode(hourlyData.weathercode[hourIndex])
+                });
+            }
+        }
+        
+        return hourly;
+    }
+
+    getWeatherConditionFromCode(code) {
         const conditions = {
-            0: isNight ? 'Clear' : 'Clear',
-            1: isNight ? 'Clear' : 'Sunny', 
-            2: isNight ? 'Partly Clear' : 'Partly Cloudy',
+            0: 'Clear',
+            1: 'Mostly Clear',
+            2: 'Partly Cloudy',
             3: 'Overcast',
-            45: 'Fog',
-            48: 'Fog',
-            51: 'Light Rain',
-            53: 'Rain',
-            55: 'Heavy Rain',
+            45: 'Foggy',
+            48: 'Foggy',
+            51: 'Light Drizzle',
+            53: 'Drizzle',
+            55: 'Heavy Drizzle',
             61: 'Light Rain',
             63: 'Rain',
             65: 'Heavy Rain',
             71: 'Light Snow',
             73: 'Snow',
             75: 'Heavy Snow',
-            77: 'Snow',
-            80: 'Showers',
+            80: 'Light Showers',
             81: 'Showers',
             82: 'Heavy Showers',
-            85: 'Snow Showers',
-            86: 'Snow Showers',
-            95: 'Thunderstorm',
-            96: 'Thunderstorm',
-            99: 'Thunderstorm'
+            95: 'Thunderstorm'
+        };
+        return conditions[code] || 'Fair';
+    }
+
+    displayWeatherData(weatherData) {
+        document.querySelector('.weather-temp').textContent = `${weatherData.temp}°`;
+        document.querySelector('.weather-desc').textContent = weatherData.condition;
+        
+        // Update hourly forecast
+        const hourlyContainer = document.getElementById('hourlyWeather');
+        let hourlyHTML = '';
+        
+        weatherData.hourly.forEach(hour => {
+            hourlyHTML += `
+                <div class="hour-item">
+                    <span class="hour">${hour.time}</span>
+                    <span class="temp">${hour.temp}°</span>
+                    <span class="condition">${hour.condition}</span>
+                </div>
+            `;
+        });
+        
+        hourlyContainer.innerHTML = hourlyHTML;
+    }
+
+    setFallbackWeather() {
+        // Simple, consistent fallback weather
+        const weatherData = {
+            temp: 22,
+            condition: 'Fair',
+            hourly: [
+                { time: 'Now', temp: 22, condition: 'Fair' },
+                { time: '20:00', temp: 21, condition: 'Clear' },
+                { time: '21:00', temp: 20, condition: 'Clear' },
+                { time: '22:00', temp: 19, condition: 'Cool' },
+                { time: '23:00', temp: 18, condition: 'Cool' }
+            ],
+            location: 'Default'
         };
         
-        return conditions[code] || (isNight ? 'Fair' : 'Fair');
+        // Cache fallback data too
+        localStorage.setItem('weatherData', JSON.stringify(weatherData));
+        localStorage.setItem('weatherCacheTime', Date.now().toString());
+        
+        this.displayWeatherData(weatherData);
     }
 
-    updateRealHourlyWeather(hourlyData) {
-        const hourlyContainer = document.getElementById('hourlyWeather');
-        const now = new Date();
-        let hourlyHTML = '';
-        
-        // Get current time index from the hourly data
-        const currentTimeStr = now.toISOString().slice(0, 13) + ':00';
-        let startIndex = 0;
-        
-        // Find the current hour in the data
-        if (hourlyData.time) {
-            startIndex = hourlyData.time.findIndex(time => time.startsWith(currentTimeStr.slice(0, 13)));
-            if (startIndex === -1) startIndex = 0;
-        }
-        
-        for (let i = 0; i < 5; i++) {
-            const dataIndex = startIndex + i;
-            if (dataIndex >= hourlyData.temperature_2m.length) break;
-            
-            const temp = Math.round(hourlyData.temperature_2m[dataIndex]);
-            const weatherCode = hourlyData.weathercode[dataIndex];
-            const futureTime = new Date(now.getTime() + (i * 60 * 60 * 1000));
-            const condition = this.getAccurateWeatherCondition(weatherCode, futureTime.getHours());
-            
-            let timeLabel;
-            if (i === 0) {
-                timeLabel = 'Now';
-            } else {
-                timeLabel = futureTime.toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: false 
-                });
-            }
-            
-            hourlyHTML += `
-                <div class="hour-item">
-                    <span class="hour">${timeLabel}</span>
-                    <span class="temp">${temp}°</span>
-                    <span class="condition">${condition}</span>
-                </div>
-            `;
-        }
-        
-        hourlyContainer.innerHTML = hourlyHTML;
-    }
 
-    setAccurateWeather() {
-        const now = new Date();
-        const hour = now.getHours();
-        
-        // Very strict time-based weather
-        let temp, condition;
-        
-        if (hour >= 6 && hour < 10) {
-            // Early Morning
-            temp = Math.floor(Math.random() * 6) + 16; // 16-22°C
-            const conditions = ['Clear', 'Fresh', 'Cool'];
-            condition = conditions[Math.floor(Math.random() * conditions.length)];
-        } else if (hour >= 10 && hour < 16) {
-            // Day
-            temp = Math.floor(Math.random() * 8) + 22; // 22-30°C
-            const conditions = ['Sunny', 'Clear', 'Bright'];
-            condition = conditions[Math.floor(Math.random() * conditions.length)];
-        } else if (hour >= 16 && hour < 20) {
-            // Evening
-            temp = Math.floor(Math.random() * 6) + 20; // 20-26°C
-            const conditions = ['Clear', 'Pleasant', 'Fair'];
-            condition = conditions[Math.floor(Math.random() * conditions.length)];
-        } else {
-            // Night (20-6) - STRICT NIGHTTIME CONDITIONS
-            temp = Math.floor(Math.random() * 6) + 14; // 14-20°C
-            const conditions = ['Cool', 'Clear', 'Calm', 'Mild'];
-            condition = conditions[Math.floor(Math.random() * conditions.length)];
-        }
-        
-        document.querySelector('.weather-temp').textContent = `${temp}°`;
-        document.querySelector('.weather-desc').textContent = condition;
-    }
-
-    generateAccurateHourlyWeather() {
-        const hourlyContainer = document.getElementById('hourlyWeather');
-        const now = new Date();
-        let hourlyHTML = '';
-        
-        for (let i = 0; i < 5; i++) {
-            const futureTime = new Date(now.getTime() + (i * 60 * 60 * 1000));
-            const hour = futureTime.getHours();
-            
-            // STRICT time-based weather conditions
-            let temp, condition;
-            
-            if (hour >= 6 && hour < 10) {
-                temp = Math.floor(Math.random() * 6) + 16;
-                condition = ['Clear', 'Fresh', 'Cool'][Math.floor(Math.random() * 3)];
-            } else if (hour >= 10 && hour < 16) {
-                temp = Math.floor(Math.random() * 8) + 22;
-                condition = ['Sunny', 'Clear', 'Bright'][Math.floor(Math.random() * 3)];
-            } else if (hour >= 16 && hour < 20) {
-                temp = Math.floor(Math.random() * 6) + 20;
-                condition = ['Clear', 'Pleasant', 'Fair'][Math.floor(Math.random() * 3)];
-            } else {
-                // NIGHT (20-6) - NO WARM/SUNNY CONDITIONS
-                temp = Math.floor(Math.random() * 6) + 14;
-                condition = ['Cool', 'Clear', 'Calm', 'Mild'][Math.floor(Math.random() * 4)];
-            }
-            
-            let timeLabel;
-            if (i === 0) {
-                timeLabel = 'Now';
-            } else {
-                timeLabel = futureTime.toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: false 
-                });
-            }
-            
-            hourlyHTML += `
-                <div class="hour-item">
-                    <span class="hour">${timeLabel}</span>
-                    <span class="temp">${temp}°</span>
-                    <span class="condition">${condition}</span>
-                </div>
-            `;
-        }
-        
-        hourlyContainer.innerHTML = hourlyHTML;
-    }
 
     updateTime() {
         const now = new Date();
@@ -861,9 +832,12 @@ class TechFlow {
             this.articles = articles;
             this.displayArticles(articles);
             
-            // Also refresh weather
-            this.setAccurateWeather();
-            this.generateAccurateHourlyWeather();
+            // Also refresh weather only if cache is old
+            const cacheTime = localStorage.getItem('weatherCacheTime');
+            const now = Date.now();
+            if (!cacheTime || (now - parseInt(cacheTime)) > 30 * 60 * 1000) {
+                await this.loadConsistentWeather();
+            }
             
         } catch (error) {
             console.error('Error refreshing articles:', error);
