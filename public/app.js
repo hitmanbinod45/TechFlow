@@ -261,9 +261,22 @@ class TechFlow {
     }
 
     setFallbackWeather() {
-        const temp = Math.floor(Math.random() * 15) + 18; // 18-33°C
-        const conditions = ['Clear', 'Sunny', 'Fair', 'Cloudy'];
-        const condition = conditions[Math.floor(Math.random() * conditions.length)];
+        const now = new Date();
+        const hour = now.getHours();
+        
+        // More realistic fallback based on time of day
+        const temp = Math.floor(Math.random() * 10) + 20; // 20-30°C
+        
+        let condition;
+        if (hour >= 6 && hour < 18) {
+            // Daytime conditions
+            const dayConditions = ['Clear', 'Sunny', 'Fair', 'Partly Cloudy'];
+            condition = dayConditions[Math.floor(Math.random() * dayConditions.length)];
+        } else {
+            // Nighttime conditions
+            const nightConditions = ['Clear', 'Fair', 'Cloudy', 'Cool'];
+            condition = nightConditions[Math.floor(Math.random() * nightConditions.length)];
+        }
         
         document.querySelector('.weather-temp').textContent = `${temp}°`;
         document.querySelector('.weather-desc').textContent = condition;
@@ -273,7 +286,7 @@ class TechFlow {
         this.showLoading();
         
         try {
-            const response = await fetch('/api/articles');
+            const response = await fetch('/api/test');
             if (!response.ok) throw new Error('Failed to fetch articles');
             
             const articles = await response.json();
