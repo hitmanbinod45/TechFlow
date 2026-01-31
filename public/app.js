@@ -21,14 +21,24 @@ class TechFlow {
 
     init() {
         this.bindEvents();
-        this.loadArticles();
         this.initTheme();
         this.initWeatherAndTime();
+        
+        // Show fallback articles immediately, then try to load live ones
+        console.log('🚀 Initializing with fallback articles...');
+        this.articles = this.createFallbackArticles();
+        this.displayArticles(this.articles);
+        
+        // Then try to load live articles in the background
+        setTimeout(() => {
+            console.log('🔄 Now attempting to load live articles...');
+            this.loadLiveArticlesInBackground();
+        }, 1000);
         
         // Auto-refresh articles every 15 minutes with real news
         setInterval(() => {
             console.log('Auto-refreshing with live news...');
-            this.loadArticles();
+            this.loadLiveArticlesInBackground();
         }, 15 * 60 * 1000); // 15 minutes for more frequent updates
         
         // Auto-refresh weather every hour
@@ -36,6 +46,34 @@ class TechFlow {
             console.log('Auto-refreshing weather...');
             this.loadConsistentWeather();
         }, 60 * 60 * 1000); // 1 hour
+    }
+
+    async loadLiveArticlesInBackground() {
+        try {
+            console.log('🔄 Background loading of live articles...');
+            
+            // Set a shorter timeout for background loading
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Background loading timeout')), 8000);
+            });
+            
+            const articlesPromise = this.fetchLiveNews();
+            
+            // Race between fetching articles and timeout
+            const articles = await Promise.race([articlesPromise, timeoutPromise]);
+            
+            if (articles && articles.length > 0) {
+                console.log(`✅ Background loaded ${articles.length} live articles, updating display`);
+                this.articles = articles;
+                this.displayArticles(this.articles);
+            } else {
+                console.log('⚠️ Background loading failed, keeping current articles');
+            }
+            
+        } catch (error) {
+            console.error('❌ Background loading failed:', error.message);
+            console.log('📰 Keeping current articles displayed');
+        }
     }
 
     bindEvents() {
@@ -582,15 +620,23 @@ class TechFlow {
         
         try {
             console.log('🔄 Loading fresh live news...');
-            // Fetch real live news from multiple sources
-            const articles = await this.fetchLiveNews();
             
-            if (articles.length === 0) {
-                console.log('⚠️ No live articles found, using fallback');
-                this.articles = this.createFallbackArticles();
-            } else {
+            // Set a timeout for the entire operation (10 seconds max)
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Loading timeout')), 10000);
+            });
+            
+            const articlesPromise = this.fetchLiveNews();
+            
+            // Race between fetching articles and timeout
+            const articles = await Promise.race([articlesPromise, timeoutPromise]);
+            
+            if (articles && articles.length > 0) {
                 console.log(`✅ Loaded ${articles.length} live articles`);
                 this.articles = articles;
+            } else {
+                console.log('⚠️ No live articles found, using fallback');
+                this.articles = this.createFallbackArticles();
             }
             
             this.displayArticles(this.articles);
@@ -608,29 +654,32 @@ class TechFlow {
         try {
             console.log('🔄 Fetching from multiple live sources...');
             
-            // Fetch from multiple real news sources with better error handling
+            // Fetch from multiple real news sources with individual timeouts
             const sources = [
-                { name: 'Hacker News', fetch: () => this.fetchHackerNewsLive() },
-                { name: 'Dev.to', fetch: () => this.fetchDevToLive() },
-                { name: 'GitHub Trending', fetch: () => this.fetchGitHubTrending() },
-                { name: 'Tech RSS', fetch: () => this.fetchTechRSSLive() }
+                { name: 'Hacker News', fetch: () => this.fetchWithTimeout(() => this.fetchHackerNewsLive(), 5000) },
+                { name: 'Dev.to', fetch: () => this.fetchWithTimeout(() => this.fetchDevToLive(), 5000) },
+                { name: 'GitHub Trending', fetch: () => this.fetchWithTimeout(() => this.fetchGitHubTrending(), 5000) },
+                { name: 'Tech RSS', fetch: () => this.fetchWithTimeout(() => this.fetchTechRSSLive(), 5000) }
             ];
             
             // Fetch all sources in parallel with individual error handling
             const results = await Promise.allSettled(sources.map(source => source.fetch()));
             
+            let successCount = 0;
             results.forEach((result, index) => {
                 const sourceName = sources[index].name;
                 if (result.status === 'fulfilled' && result.value.length > 0) {
                     console.log(`✅ ${sourceName}: ${result.value.length} articles`);
                     allArticles.push(...result.value);
+                    successCount++;
                 } else {
                     console.log(`⚠️ ${sourceName}: Failed or no articles`);
                 }
             });
             
-            if (allArticles.length === 0) {
-                console.log('⚠️ No articles from any source, returning empty array');
+            // If no sources worked, return empty to trigger fallback
+            if (successCount === 0) {
+                console.log('⚠️ All sources failed, returning empty array');
                 return [];
             }
             
@@ -651,7 +700,7 @@ class TechFlow {
                 .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
                 .slice(0, 12);
             
-            console.log(`✅ Returning ${validArticles.length} valid articles`);
+            console.log(`✅ Returning ${validArticles.length} valid articles from ${successCount} sources`);
             return validArticles;
             
         } catch (error) {
@@ -660,33 +709,46 @@ class TechFlow {
         }
     }
 
+    async fetchWithTimeout(fetchFunction, timeout = 5000) {
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Request timeout')), timeout);
+        });
+        
+        try {
+            return await Promise.race([fetchFunction(), timeoutPromise]);
+        } catch (error) {
+            console.error('Fetch timeout or error:', error.message);
+            return [];
+        }
+    }
+
     async fetchHackerNewsLive() {
         try {
             const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+            if (!response.ok) throw new Error('HN API failed');
+            
             const storyIds = await response.json();
             const articles = [];
             
-            // Get latest 20 stories to have better filtering options
-            for (let i = 0; i < Math.min(20, storyIds.length); i++) {
+            // Get only first 10 stories for speed
+            for (let i = 0; i < Math.min(10, storyIds.length); i++) {
                 try {
                     const storyResponse = await fetch(`https://hacker-news.firebaseio.com/v0/item/${storyIds[i]}.json`);
+                    if (!storyResponse.ok) continue;
+                    
                     const story = await storyResponse.json();
                     
-                    if (story && story.title && story.url && story.time && story.score > 20) {
-                        // Filter for tech-related content
-                        const techKeywords = ['tech', 'ai', 'software', 'programming', 'startup', 'mobile', 'app', 'google', 'apple', 'microsoft', 'github', 'javascript', 'python', 'react', 'web', 'code', 'developer', 'api', 'database', 'cloud', 'security'];
-                        const isTechRelated = techKeywords.some(keyword => 
-                            story.title.toLowerCase().includes(keyword) ||
-                            (story.url && story.url.toLowerCase().includes(keyword))
-                        );
+                    if (story && story.title && story.url && story.time && story.score > 15) {
+                        // Simple tech keyword check
+                        const title = story.title.toLowerCase();
+                        const isTech = ['tech', 'ai', 'software', 'app', 'web', 'code', 'startup', 'google', 'apple', 'microsoft'].some(keyword => title.includes(keyword));
                         
-                        if (isTechRelated) {
-                            // Ensure we have a proper timestamp
+                        if (isTech) {
                             const timestamp = new Date(story.time * 1000);
                             const now = new Date();
                             
-                            // Only include articles from the last 7 days
-                            if (now - timestamp < 7 * 24 * 60 * 60 * 1000) {
+                            // Only recent articles (last 3 days)
+                            if (now - timestamp < 3 * 24 * 60 * 60 * 1000) {
                                 articles.push({
                                     id: `hn-${story.id}`,
                                     title: story.title.trim(),
@@ -701,10 +763,11 @@ class TechFlow {
                         }
                     }
                 } catch (err) {
-                    console.error('Error fetching HN story:', err);
+                    // Skip failed stories
+                    continue;
                 }
                 
-                if (articles.length >= 4) break;
+                if (articles.length >= 3) break; // Limit for speed
             }
             
             return articles;
@@ -716,20 +779,13 @@ class TechFlow {
 
     async fetchDevToLive() {
         try {
-            const response = await fetch('https://dev.to/api/articles?tag=javascript&top=7&per_page=12');
+            const response = await fetch('https://dev.to/api/articles?tag=javascript&top=7&per_page=6');
+            if (!response.ok) throw new Error('Dev.to API failed');
+            
             const articles = await response.json();
             
-            return articles.slice(0, 4).map(article => {
-                // Ensure we have a proper timestamp
+            return articles.slice(0, 3).map(article => {
                 const timestamp = new Date(article.published_at);
-                const now = new Date();
-                
-                // Only include recent articles (last 7 days)
-                if (now - timestamp > 7 * 24 * 60 * 60 * 1000) {
-                    // If article is too old, adjust timestamp to be more recent
-                    const recentTime = new Date(now - Math.random() * 24 * 60 * 60 * 1000);
-                    timestamp.setTime(recentTime.getTime());
-                }
                 
                 return {
                     id: `devto-${article.id}`,
@@ -858,10 +914,23 @@ class TechFlow {
         this.refreshBtn.classList.add('loading');
         
         try {
-            // Fetch fresh live news
-            const articles = await this.fetchLiveNews();
-            this.articles = articles;
-            this.displayArticles(articles);
+            console.log('🔄 Manual refresh triggered...');
+            
+            // Try to fetch fresh live news with timeout
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Refresh timeout')), 8000);
+            });
+            
+            const articlesPromise = this.fetchLiveNews();
+            const articles = await Promise.race([articlesPromise, timeoutPromise]);
+            
+            if (articles && articles.length > 0) {
+                console.log(`✅ Refresh loaded ${articles.length} live articles`);
+                this.articles = articles;
+                this.displayArticles(this.articles);
+            } else {
+                console.log('⚠️ Refresh failed, keeping current articles');
+            }
             
             // Also refresh weather only if cache is old
             const cacheTime = localStorage.getItem('weatherCacheTime');
@@ -871,8 +940,8 @@ class TechFlow {
             }
             
         } catch (error) {
-            console.error('Error refreshing articles:', error);
-            this.showError();
+            console.error('❌ Error refreshing articles:', error.message);
+            console.log('📰 Keeping current articles displayed');
         } finally {
             this.refreshBtn.classList.remove('loading');
         }
