@@ -383,6 +383,16 @@
         </footer>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        // Debug logging
+        console.log('🔧 DEBUG: Page loading started');
+        window.addEventListener('load', () => {
+            console.log('🔧 DEBUG: Page fully loaded');
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔧 DEBUG: DOM ready');
+        });
+    </script>
+    <script src="app-simple.js"></script>
 </body>
 </html>
