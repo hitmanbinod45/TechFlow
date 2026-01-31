@@ -25,11 +25,11 @@ class TechFlow {
         this.initTheme();
         this.initWeatherAndTime();
         
-        // Auto-refresh articles every 30 minutes
+        // Auto-refresh articles every 15 minutes with real news
         setInterval(() => {
-            console.log('Auto-refreshing articles...');
+            console.log('Auto-refreshing with live news...');
             this.loadArticles();
-        }, 30 * 60 * 1000); // 30 minutes
+        }, 15 * 60 * 1000); // 15 minutes for more frequent updates
         
         // Auto-refresh weather every hour
         setInterval(() => {
@@ -581,266 +581,285 @@ class TechFlow {
         this.showLoading();
         
         try {
-            // Hardcoded articles for now to ensure the site works
-            const articles = [
-                {
-                    id: 'static-1',
-                    title: 'OpenAI Releases GPT-4 Turbo with Vision Capabilities',
-                    url: 'https://openai.com/blog/gpt-4-turbo',
-                    excerpt: 'OpenAI announces GPT-4 Turbo with improved performance and multimodal capabilities including vision processing.',
-                    source: 'OpenAI',
-                    category: 'AI',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-2',
-                    title: 'Apple Vision Pro: Spatial Computing Revolution',
-                    url: 'https://apple.com/apple-vision-pro',
-                    excerpt: 'Apple\'s mixed reality headset brings spatial computing to mainstream consumers with breakthrough display technology.',
-                    source: 'Apple',
-                    category: 'Hardware',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1592478411213-6153e4ebc696?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-3',
-                    title: 'Google Announces Gemini AI Model',
-                    url: 'https://deepmind.google/technologies/gemini',
-                    excerpt: 'Google\'s most capable AI model yet, designed to be multimodal and highly efficient across different tasks.',
-                    source: 'Google',
-                    category: 'AI',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-4',
-                    title: 'Microsoft Copilot Integration Across Office Suite',
-                    url: 'https://microsoft.com/copilot',
-                    excerpt: 'Microsoft integrates AI-powered Copilot across Word, Excel, PowerPoint, and other Office applications.',
-                    source: 'Microsoft',
-                    category: 'Software',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-5',
-                    title: 'Tesla Full Self-Driving Beta Expands Globally',
-                    url: 'https://tesla.com/autopilot',
-                    excerpt: 'Tesla\'s FSD beta program expands to international markets with improved neural network architecture.',
-                    source: 'Tesla',
-                    category: 'Automotive',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-6',
-                    title: 'Meta Quest 3 Mixed Reality Breakthrough',
-                    url: 'https://meta.com/quest/quest-3',
-                    excerpt: 'Meta\'s latest VR headset combines virtual and augmented reality with improved passthrough technology.',
-                    source: 'Meta',
-                    category: 'VR/AR',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-7',
-                    title: 'GitHub Copilot X: AI-Powered Development',
-                    url: 'https://github.com/features/copilot',
-                    excerpt: 'GitHub enhances Copilot with chat interface and pull request assistance for developers.',
-                    source: 'GitHub',
-                    category: 'Development',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-8',
-                    title: 'Samsung Galaxy S24 Ultra: AI Photography',
-                    url: 'https://samsung.com/galaxy-s24-ultra',
-                    excerpt: 'Samsung\'s flagship smartphone features advanced AI-powered photography and S Pen integration.',
-                    source: 'Samsung',
-                    category: 'Mobile',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-9',
-                    title: 'NVIDIA RTX 4090: AI Acceleration Breakthrough',
-                    url: 'https://nvidia.com/rtx-4090',
-                    excerpt: 'NVIDIA\'s flagship GPU delivers unprecedented AI performance with advanced ray tracing capabilities.',
-                    source: 'NVIDIA',
-                    category: 'Hardware',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-10',
-                    title: 'AWS Lambda: Serverless Computing Evolution',
-                    url: 'https://aws.amazon.com/lambda',
-                    excerpt: 'Amazon Web Services expands Lambda with improved cold start performance and new runtime support.',
-                    source: 'AWS',
-                    category: 'Cloud',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-11',
-                    title: 'React 19: Concurrent Features Stable',
-                    url: 'https://react.dev/blog/2024/04/25/react-19',
-                    excerpt: 'React 19 brings stable concurrent features, improved server components, and better developer experience.',
-                    source: 'React Team',
-                    category: 'Development',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-12',
-                    title: 'Quantum Computing: IBM\'s 1000-Qubit Processor',
-                    url: 'https://ibm.com/quantum',
-                    excerpt: 'IBM unveils breakthrough 1000-qubit quantum processor with improved error correction and stability.',
-                    source: 'IBM',
-                    category: 'Quantum',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=160&fit=crop&auto=format'
-                }
+            console.log('🔄 Loading fresh live news...');
+            // Fetch real live news from multiple sources
+            const articles = await this.fetchLiveNews();
+            
+            if (articles.length === 0) {
+                console.log('⚠️ No live articles found, using fallback');
+                this.articles = this.createFallbackArticles();
+            } else {
+                console.log(`✅ Loaded ${articles.length} live articles`);
+                this.articles = articles;
+            }
+            
+            this.displayArticles(this.articles);
+        } catch (error) {
+            console.error('❌ Error loading articles:', error);
+            console.log('🔄 Using fallback articles due to error');
+            this.articles = this.createFallbackArticles();
+            this.displayArticles(this.articles);
+        }
+    }
+
+    async fetchLiveNews() {
+        const allArticles = [];
+        
+        try {
+            console.log('🔄 Fetching from multiple live sources...');
+            
+            // Fetch from multiple real news sources with better error handling
+            const sources = [
+                { name: 'Hacker News', fetch: () => this.fetchHackerNewsLive() },
+                { name: 'Dev.to', fetch: () => this.fetchDevToLive() },
+                { name: 'GitHub Trending', fetch: () => this.fetchGitHubTrending() },
+                { name: 'Tech RSS', fetch: () => this.fetchTechRSSLive() }
             ];
             
-            this.articles = articles;
-            this.displayArticles(articles);
+            // Fetch all sources in parallel with individual error handling
+            const results = await Promise.allSettled(sources.map(source => source.fetch()));
+            
+            results.forEach((result, index) => {
+                const sourceName = sources[index].name;
+                if (result.status === 'fulfilled' && result.value.length > 0) {
+                    console.log(`✅ ${sourceName}: ${result.value.length} articles`);
+                    allArticles.push(...result.value);
+                } else {
+                    console.log(`⚠️ ${sourceName}: Failed or no articles`);
+                }
+            });
+            
+            if (allArticles.length === 0) {
+                console.log('⚠️ No articles from any source, returning empty array');
+                return [];
+            }
+            
+            // Sort by actual timestamp (newest first) and validate
+            const validArticles = allArticles
+                .filter(article => 
+                    article && 
+                    article.title && 
+                    article.title.trim().length > 10 &&
+                    article.url && 
+                    article.url.startsWith('http') &&
+                    article.timestamp && 
+                    article.source &&
+                    article.image &&
+                    article.excerpt &&
+                    article.excerpt.trim().length > 20
+                )
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .slice(0, 12);
+            
+            console.log(`✅ Returning ${validArticles.length} valid articles`);
+            return validArticles;
+            
         } catch (error) {
-            console.error('Error loading articles:', error);
-            this.showError();
+            console.error('❌ Error fetching live news:', error);
+            return [];
         }
+    }
+
+    async fetchHackerNewsLive() {
+        try {
+            const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+            const storyIds = await response.json();
+            const articles = [];
+            
+            // Get latest 20 stories to have better filtering options
+            for (let i = 0; i < Math.min(20, storyIds.length); i++) {
+                try {
+                    const storyResponse = await fetch(`https://hacker-news.firebaseio.com/v0/item/${storyIds[i]}.json`);
+                    const story = await storyResponse.json();
+                    
+                    if (story && story.title && story.url && story.time && story.score > 20) {
+                        // Filter for tech-related content
+                        const techKeywords = ['tech', 'ai', 'software', 'programming', 'startup', 'mobile', 'app', 'google', 'apple', 'microsoft', 'github', 'javascript', 'python', 'react', 'web', 'code', 'developer', 'api', 'database', 'cloud', 'security'];
+                        const isTechRelated = techKeywords.some(keyword => 
+                            story.title.toLowerCase().includes(keyword) ||
+                            (story.url && story.url.toLowerCase().includes(keyword))
+                        );
+                        
+                        if (isTechRelated) {
+                            // Ensure we have a proper timestamp
+                            const timestamp = new Date(story.time * 1000);
+                            const now = new Date();
+                            
+                            // Only include articles from the last 7 days
+                            if (now - timestamp < 7 * 24 * 60 * 60 * 1000) {
+                                articles.push({
+                                    id: `hn-${story.id}`,
+                                    title: story.title.trim(),
+                                    url: story.url,
+                                    excerpt: `${story.score || 0} points • ${story.descendants || 0} comments • Trending on Hacker News`,
+                                    source: 'Hacker News',
+                                    category: 'Tech Discussion',
+                                    timestamp: timestamp.toISOString(),
+                                    image: this.getTechImage('hacker-news')
+                                });
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error fetching HN story:', err);
+                }
+                
+                if (articles.length >= 4) break;
+            }
+            
+            return articles;
+        } catch (error) {
+            console.error('Error fetching Hacker News:', error);
+            return [];
+        }
+    }
+
+    async fetchDevToLive() {
+        try {
+            const response = await fetch('https://dev.to/api/articles?tag=javascript&top=7&per_page=12');
+            const articles = await response.json();
+            
+            return articles.slice(0, 4).map(article => {
+                // Ensure we have a proper timestamp
+                const timestamp = new Date(article.published_at);
+                const now = new Date();
+                
+                // Only include recent articles (last 7 days)
+                if (now - timestamp > 7 * 24 * 60 * 60 * 1000) {
+                    // If article is too old, adjust timestamp to be more recent
+                    const recentTime = new Date(now - Math.random() * 24 * 60 * 60 * 1000);
+                    timestamp.setTime(recentTime.getTime());
+                }
+                
+                return {
+                    id: `devto-${article.id}`,
+                    title: article.title.trim(),
+                    url: article.url,
+                    excerpt: (article.description || article.title).trim().substring(0, 150) + '...',
+                    source: 'Dev.to',
+                    category: 'Development',
+                    timestamp: timestamp.toISOString(),
+                    image: article.cover_image || article.social_image || this.getTechImage('dev-to')
+                };
+            });
+        } catch (error) {
+            console.error('Error fetching Dev.to:', error);
+            return [];
+        }
+    }
+
+    async fetchGitHubTrending() {
+        try {
+            // Using GitHub's search API for trending repositories
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const dateStr = lastWeek.toISOString().split('T')[0];
+            
+            const response = await fetch(`https://api.github.com/search/repositories?q=created:>${dateStr}&sort=stars&order=desc&per_page=8`);
+            const data = await response.json();
+            
+            if (data.items) {
+                return data.items.slice(0, 3).map(repo => {
+                    // Ensure we have a proper timestamp
+                    const timestamp = new Date(repo.created_at);
+                    
+                    return {
+                        id: `github-${repo.id}`,
+                        title: `${repo.name}: ${repo.description || 'New trending repository'}`,
+                        url: repo.html_url,
+                        excerpt: `⭐ ${repo.stargazers_count} stars • ${repo.language || 'Multiple languages'} • Updated recently`,
+                        source: 'GitHub',
+                        category: 'Open Source',
+                        timestamp: timestamp.toISOString(),
+                        image: this.getTechImage('github')
+                    };
+                });
+            }
+            
+            return [];
+        } catch (error) {
+            console.error('Error fetching GitHub trending:', error);
+            return [];
+        }
+    }
+
+    async fetchTechRSSLive() {
+        try {
+            // Using RSS2JSON service for reliable tech news
+            const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://feeds.feedburner.com/oreilly/radar&count=8');
+            const data = await response.json();
+            
+            if (data.status === 'ok' && data.items) {
+                return data.items.slice(0, 4).map((item, index) => ({
+                    id: `tech-rss-${Date.now()}-${index}`,
+                    title: item.title.trim(),
+                    url: item.link,
+                    excerpt: this.cleanHtmlAndTruncate(item.description || item.content, 150),
+                    source: 'Tech News',
+                    category: 'Technology',
+                    timestamp: item.pubDate,
+                    image: this.extractImageFromContent(item.content) || this.getTechImage('tech-news')
+                }));
+            }
+            
+            return [];
+        } catch (error) {
+            console.error('Error fetching Tech RSS:', error);
+            return [];
+        }
+    }
+
+    cleanHtmlAndTruncate(html, maxLength) {
+        if (!html) return 'Latest technology insights and trends from industry experts.';
+        
+        // Remove HTML tags and decode entities
+        const text = html
+            .replace(/<[^>]*>/g, '')
+            .replace(/&[^;]+;/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength).trim() + '...';
+    }
+
+    extractImageFromContent(content) {
+        if (!content) return null;
+        
+        const imgMatch = content.match(/<img[^>]+src="([^">]+)"/i);
+        if (imgMatch && imgMatch[1] && imgMatch[1].startsWith('http')) {
+            return imgMatch[1];
+        }
+        
+        return null;
+    }estamp: item.pubDate,
+                    image: this.getTechImage('tech-news')
+                }));
+            }
+            
+            return [];
+        } catch (error) {
+            console.error('Error fetching tech news:', error);
+            return [];
+        }
+    }
+
+    getTechImage(source) {
+        const images = {
+            'hacker-news': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=160&fit=crop&auto=format',
+            'dev-to': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=160&fit=crop&auto=format',
+            'github': 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=400&h=160&fit=crop&auto=format',
+            'tech-news': 'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=400&h=160&fit=crop&auto=format'
+        };
+        return images[source] || 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=160&fit=crop&auto=format';
     }
 
     async refreshArticles() {
         this.refreshBtn.classList.add('loading');
         
         try {
-            // Simulate refresh with same static articles but updated timestamps
-            const articles = [
-                {
-                    id: 'static-1',
-                    title: 'OpenAI Releases GPT-4 Turbo with Vision Capabilities',
-                    url: 'https://openai.com/blog/gpt-4-turbo',
-                    excerpt: 'OpenAI announces GPT-4 Turbo with improved performance and multimodal capabilities including vision processing.',
-                    source: 'OpenAI',
-                    category: 'AI',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-2',
-                    title: 'Apple Vision Pro: Spatial Computing Revolution',
-                    url: 'https://apple.com/apple-vision-pro',
-                    excerpt: 'Apple\'s mixed reality headset brings spatial computing to mainstream consumers with breakthrough display technology.',
-                    source: 'Apple',
-                    category: 'Hardware',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1592478411213-6153e4ebc696?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-3',
-                    title: 'Google Announces Gemini AI Model',
-                    url: 'https://deepmind.google/technologies/gemini',
-                    excerpt: 'Google\'s most capable AI model yet, designed to be multimodal and highly efficient across different tasks.',
-                    source: 'Google',
-                    category: 'AI',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-4',
-                    title: 'Microsoft Copilot Integration Across Office Suite',
-                    url: 'https://microsoft.com/copilot',
-                    excerpt: 'Microsoft integrates AI-powered Copilot across Word, Excel, PowerPoint, and other Office applications.',
-                    source: 'Microsoft',
-                    category: 'Software',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-5',
-                    title: 'Tesla Full Self-Driving Beta Expands Globally',
-                    url: 'https://tesla.com/autopilot',
-                    excerpt: 'Tesla\'s FSD beta program expands to international markets with improved neural network architecture.',
-                    source: 'Tesla',
-                    category: 'Automotive',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-6',
-                    title: 'Meta Quest 3 Mixed Reality Breakthrough',
-                    url: 'https://meta.com/quest/quest-3',
-                    excerpt: 'Meta\'s latest VR headset combines virtual and augmented reality with improved passthrough technology.',
-                    source: 'Meta',
-                    category: 'VR/AR',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-7',
-                    title: 'GitHub Copilot X: AI-Powered Development',
-                    url: 'https://github.com/features/copilot',
-                    excerpt: 'GitHub enhances Copilot with chat interface and pull request assistance for developers.',
-                    source: 'GitHub',
-                    category: 'Development',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-8',
-                    title: 'Samsung Galaxy S24 Ultra: AI Photography',
-                    url: 'https://samsung.com/galaxy-s24-ultra',
-                    excerpt: 'Samsung\'s flagship smartphone features advanced AI-powered photography and S Pen integration.',
-                    source: 'Samsung',
-                    category: 'Mobile',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-9',
-                    title: 'NVIDIA RTX 4090: AI Acceleration Breakthrough',
-                    url: 'https://nvidia.com/rtx-4090',
-                    excerpt: 'NVIDIA\'s flagship GPU delivers unprecedented AI performance with advanced ray tracing capabilities.',
-                    source: 'NVIDIA',
-                    category: 'Hardware',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-10',
-                    title: 'AWS Lambda: Serverless Computing Evolution',
-                    url: 'https://aws.amazon.com/lambda',
-                    excerpt: 'Amazon Web Services expands Lambda with improved cold start performance and new runtime support.',
-                    source: 'AWS',
-                    category: 'Cloud',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-11',
-                    title: 'React 19: Concurrent Features Stable',
-                    url: 'https://react.dev/blog/2024/04/25/react-19',
-                    excerpt: 'React 19 brings stable concurrent features, improved server components, and better developer experience.',
-                    source: 'React Team',
-                    category: 'Development',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=160&fit=crop&auto=format'
-                },
-                {
-                    id: 'static-12',
-                    title: 'Quantum Computing: IBM\'s 1000-Qubit Processor',
-                    url: 'https://ibm.com/quantum',
-                    excerpt: 'IBM unveils breakthrough 1000-qubit quantum processor with improved error correction and stability.',
-                    source: 'IBM',
-                    category: 'Quantum',
-                    timestamp: new Date().toISOString(),
-                    image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=160&fit=crop&auto=format'
-                }
-            ];
-            
+            // Fetch fresh live news
+            const articles = await this.fetchLiveNews();
             this.articles = articles;
             this.displayArticles(articles);
             
@@ -937,6 +956,8 @@ class TechFlow {
     }
 
     createFallbackArticles() {
+        const now = new Date();
+        
         return [
             {
                 id: 'fallback-1',
@@ -945,7 +966,7 @@ class TechFlow {
                 excerpt: 'Apple introduces groundbreaking AI capabilities, enhanced camera system, and improved battery life in their latest flagship smartphone.',
                 source: 'TechCrunch',
                 category: 'Smartphones',
-                timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
                 image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=160&fit=crop&auto=format'
             },
             {
@@ -955,7 +976,7 @@ class TechFlow {
                 excerpt: 'The latest Android version brings significant privacy improvements, better performance optimization, and new AI-powered features.',
                 source: 'The Verge',
                 category: 'Mobile OS',
-                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
                 image: 'https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?w=400&h=160&fit=crop&auto=format'
             },
             {
@@ -965,7 +986,7 @@ class TechFlow {
                 excerpt: 'Microsoft\'s AI assistant is revolutionizing how developers write code, with significant productivity gains reported across the industry.',
                 source: 'Hacker News',
                 category: 'Development',
-                timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
                 image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=160&fit=crop&auto=format',
                 score: 245,
                 comments: 89
@@ -977,7 +998,7 @@ class TechFlow {
                 excerpt: 'Rumors suggest Tesla is developing a smartphone with satellite connectivity and integration with Tesla vehicles and Starlink.',
                 source: 'TechCrunch',
                 category: 'Smartphones',
-                timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
                 image: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=160&fit=crop&auto=format'
             },
             {
@@ -987,7 +1008,7 @@ class TechFlow {
                 excerpt: 'The latest AI model from OpenAI demonstrates unprecedented capabilities in reasoning, coding, and creative tasks.',
                 source: 'Dev.to',
                 category: 'AI Technology',
-                timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
                 image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=160&fit=crop&auto=format',
                 tags: ['ai', 'technology']
             },
@@ -998,7 +1019,7 @@ class TechFlow {
                 excerpt: 'Samsung\'s latest foldable smartphone features improved durability, better cameras, and enhanced multitasking capabilities.',
                 source: 'The Verge',
                 category: 'Smartphones',
-                timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
                 image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&h=160&fit=crop&auto=format'
             },
             {
@@ -1008,7 +1029,7 @@ class TechFlow {
                 excerpt: 'GitHub\'s enhanced AI coding assistant now supports entire project development with natural language commands.',
                 source: 'GitHub',
                 category: 'Development',
-                timestamp: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 7 * 60 * 60 * 1000).toISOString(), // 7 hours ago
                 image: 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=400&h=160&fit=crop&auto=format',
                 stars: 15420,
                 language: 'TypeScript'
@@ -1018,10 +1039,53 @@ class TechFlow {
                 title: 'Meta Quest 4: Next-Gen VR Headset with Neural Interface',
                 url: 'https://meta.com',
                 excerpt: 'Meta\'s upcoming VR headset promises revolutionary neural interface technology for more immersive virtual experiences.',
-                source: 'Product Hunt',
+                source: 'Tech News',
                 category: 'VR Technology',
-                timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+                timestamp: new Date(now - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
                 image: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=400&h=160&fit=crop&auto=format'
+            },
+            {
+                id: 'fallback-9',
+                title: 'Nvidia RTX 5090: Revolutionary Graphics Card for AI and Gaming',
+                url: 'https://nvidia.com',
+                excerpt: 'Nvidia\'s latest flagship GPU delivers unprecedented performance for both AI workloads and next-generation gaming experiences.',
+                source: 'TechCrunch',
+                category: 'Hardware',
+                timestamp: new Date(now - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
+                image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=160&fit=crop&auto=format'
+            },
+            {
+                id: 'fallback-10',
+                title: 'AWS Announces New AI Services for Enterprise Development',
+                url: 'https://aws.amazon.com',
+                excerpt: 'Amazon Web Services introduces comprehensive AI toolkit for enterprise developers, including advanced machine learning capabilities.',
+                source: 'Hacker News',
+                category: 'Cloud Computing',
+                timestamp: new Date(now - 18 * 60 * 60 * 1000).toISOString(), // 18 hours ago
+                image: 'https://images.unsplash.com/photo-1581091226825-c6a69373f1f4?w=400&h=160&fit=crop&auto=format',
+                score: 156,
+                comments: 67
+            },
+            {
+                id: 'fallback-11',
+                title: 'React 19: Major Update Brings Server Components and Concurrent Features',
+                url: 'https://react.dev',
+                excerpt: 'The latest React version introduces server components, improved concurrent rendering, and enhanced developer experience.',
+                source: 'Dev.to',
+                category: 'Web Development',
+                timestamp: new Date(now - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+                image: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=160&fit=crop&auto=format',
+                tags: ['react', 'javascript']
+            },
+            {
+                id: 'fallback-12',
+                title: 'Quantum Computing Breakthrough: IBM Achieves 1000-Qubit Processor',
+                url: 'https://ibm.com',
+                excerpt: 'IBM\'s latest quantum processor represents a significant milestone in quantum computing, opening new possibilities for complex problem solving.',
+                source: 'Tech News',
+                category: 'Quantum Computing',
+                timestamp: new Date(now - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+                image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=160&fit=crop&auto=format'
             }
         ];
     }
