@@ -29,16 +29,19 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #1a1a1a;
-            --bg-tertiary: #2a2a2a;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
-            --border: #333333;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --success: #10b981;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --text-muted: #6c757d;
+            --border: #dee2e6;
+            --accent: #007bff;
+            --accent-hover: #0056b3;
+            --success: #28a745;
+            --gsm-blue: #1e6091;
+            --gsm-light-blue: #e3f2fd;
+            --gsm-orange: #ff6b35;
         }
         
         body {
@@ -55,89 +58,106 @@
         }
         
         .header {
-            padding: 2rem 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 2rem;
-            text-align: center;
+            background: var(--gsm-blue);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .header h1 {
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
+            color: white;
+            margin-bottom: 0;
+        }
+        
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .tagline {
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .nav-menu a:hover {
+            background: rgba(255,255,255,0.1);
         }
         
         .monetization-notice {
             background: var(--success);
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            margin: 2rem auto;
+            padding: 0.75rem 2rem;
             text-align: center;
-            max-width: 600px;
             font-weight: 500;
+            font-size: 0.9rem;
         }
         
         .content-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 3rem;
-            margin-bottom: 3rem;
+            gap: 2rem;
+            margin: 2rem 0;
+            background: var(--bg-primary);
         }
         
         .main-content {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1.5rem;
         }
         
         .featured-article {
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2.5rem;
+            border-radius: 8px;
+            padding: 2rem;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .featured-article::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .featured-article:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--gsm-blue);
         }
         
         .article {
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
+            border-radius: 8px;
+            padding: 1.5rem;
             transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
         .article:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: var(--gsm-blue);
         }
         
         .article-meta {
@@ -150,19 +170,19 @@
         }
         
         .article-category {
-            background: var(--accent);
+            background: var(--gsm-blue);
             color: white;
             padding: 0.25rem 0.75rem;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 500;
         }
         
         .featured-badge {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+            background: var(--gsm-orange);
             color: white;
             padding: 0.25rem 0.75rem;
-            border-radius: 20px;
+            border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 600;
         }
@@ -186,7 +206,7 @@
         }
         
         .read-more {
-            color: var(--accent);
+            color: var(--gsm-blue);
             text-decoration: none;
             font-weight: 500;
             display: inline-flex;
@@ -197,30 +217,34 @@
         
         .read-more:hover {
             color: var(--accent-hover);
+            text-decoration: underline;
         }
         
         .sidebar {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1.5rem;
         }
         
         .widget {
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
         .widget h3 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: var(--accent);
+            color: var(--gsm-blue);
+            border-bottom: 2px solid var(--gsm-light-blue);
+            padding-bottom: 0.5rem;
         }
         
         .ad-space {
-            background: var(--bg-tertiary);
+            background: var(--bg-secondary);
             border: 2px dashed var(--border);
             border-radius: 8px;
             padding: 2rem;
@@ -234,16 +258,18 @@
         }
         
         .newsletter {
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background: var(--gsm-blue);
             color: white;
             padding: 2rem;
-            border-radius: 12px;
+            border-radius: 8px;
             text-align: center;
         }
         
         .newsletter h3 {
             color: white;
             margin-bottom: 1rem;
+            border: none;
+            padding: 0;
         }
         
         .newsletter input {
@@ -257,24 +283,28 @@
         
         .newsletter button {
             background: white;
-            color: var(--accent);
+            color: var(--gsm-blue);
             border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 4px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
+            margin: 0.5rem;
             transition: all 0.2s ease;
         }
         
         .newsletter button:hover {
-            transform: translateY(-1px);
+            background: var(--bg-secondary);
         }
         
         .footer {
+            background: var(--bg-secondary);
             border-top: 1px solid var(--border);
             padding: 2rem 0;
             text-align: center;
             color: var(--text-muted);
+            margin-top: 3rem;
         }
         
         .footer-links {
@@ -282,14 +312,15 @@
         }
         
         .footer-links a {
-            color: var(--text-muted);
+            color: var(--gsm-blue);
             text-decoration: none;
             margin: 0 1rem;
             transition: color 0.2s ease;
         }
         
         .footer-links a:hover {
-            color: var(--accent);
+            color: var(--accent-hover);
+            text-decoration: underline;
         }
         
         @media (max-width: 768px) {
@@ -314,12 +345,28 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🚀 TechInsights</h1>
-            <p class="tagline">Original Tech Analysis & Expert Reviews</p>
-            <div class="monetization-notice">
-                <strong>✅ 100% ORIGINAL CONTENT:</strong> Legally monetizable with AdSense approval
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <h1>📱 TechInsights</h1>
+                        <div>
+                            <p class="tagline">Mobile Reviews, News & Specifications</p>
+                        </div>
+                    </div>
+                    <nav class="nav-menu">
+                        <a href="/">Home</a>
+                        <a href="#reviews">Reviews</a>
+                        <a href="#news">News</a>
+                        <a href="#compare">Compare</a>
+                        <a href="#specs">Specs</a>
+                    </nav>
+                </div>
             </div>
         </header>
+        
+        <div class="monetization-notice">
+            <strong>✅ 100% ORIGINAL CONTENT:</strong> Professional mobile tech analysis & reviews
+        </div>
         
         <div class="content-grid">
             <main class="main-content">
@@ -330,10 +377,12 @@
                         <span>By TechInsights Team</span>
                         <span>•</span>
                         <span>12 min read</span>
+                        <span>•</span>
+                        <span>Feb 1, 2026</span>
                     </div>
                     <h2>iPhone 16 Pro Review: The AI Revolution That Actually Delivers</h2>
                     <p>After 30 days of real-world testing, here's what Apple got right (and wrong) with their most ambitious iPhone yet. We dive deep into the A18 Pro chip's AI capabilities, camera improvements, and whether the premium price tag is justified.</p>
-                    <p>The new Neural Engine processes AI tasks 40% faster than the A17 Pro, and it shows in daily use. From instant photo processing to context-aware Siri responses, this is the first iPhone that truly feels like it's from the future.</p>
+                    <p><strong>Key highlights:</strong> 40% faster AI processing, improved camera system, better battery optimization, and genuine productivity improvements that justify the upgrade.</p>
                     <a href="/iphone-16-review.html" class="read-more">Read Full Review →</a>
                 </article>
                 
@@ -344,9 +393,11 @@
                         <span>By Security Team</span>
                         <span>•</span>
                         <span>8 min read</span>
+                        <span>•</span>
+                        <span>Jan 31, 2026</span>
                     </div>
                     <h2>The Complete Android Privacy Guide: Protect Your Data in 2026</h2>
-                    <p>Your Android phone knows more about you than your closest friends. Here's how to take back control of your privacy without sacrificing functionality. We cover everything from app permissions to network security.</p>
+                    <p>Your Android phone collects more data than you realize. Here's how to take back control of your privacy without sacrificing functionality. Complete guide covering app permissions, network security, and data encryption.</p>
                     <a href="/androidprivacyguide.html" class="read-more">Read Privacy Guide →</a>
                 </article>
                 
@@ -356,6 +407,8 @@
                         <span>By Review Team</span>
                         <span>•</span>
                         <span>10 min read</span>
+                        <span>•</span>
+                        <span>Jan 30, 2026</span>
                     </div>
                     <h2>Best Budget Smartphones 2026: Flagship Features for Less</h2>
                     <p>You don't need to spend $1000+ for a great smartphone experience. We tested 15 budget phones under $400 to find the ones that deliver premium features without the premium price tag.</p>
@@ -368,6 +421,8 @@
                         <span>By Tech Analysts</span>
                         <span>•</span>
                         <span>6 min read</span>
+                        <span>•</span>
+                        <span>Jan 29, 2026</span>
                     </div>
                     <h2>Web Development Trends 2026: What's Shaping the Future</h2>
                     <p>From AI-powered development tools to the rise of WebAssembly, the web development landscape is evolving rapidly. Here are the trends that will define the next year of web development.</p>
@@ -380,6 +435,8 @@
                         <span>By Productivity Team</span>
                         <span>•</span>
                         <span>9 min read</span>
+                        <span>•</span>
+                        <span>Jan 28, 2026</span>
                     </div>
                     <h2>AI Productivity Tools That Actually Save Time (Not Hype)</h2>
                     <p>Cut through the AI hype with our tested recommendations for productivity tools that genuinely improve your workflow. We spent 3 months testing 50+ AI tools to find the ones worth your time and money.</p>
@@ -388,6 +445,31 @@
             </main>
             
             <aside class="sidebar">
+                <!-- Latest News Widget -->
+                <div class="widget">
+                    <h3>📰 Latest Tech News</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                            <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; line-height: 1.3;">
+                                <a href="#" style="color: var(--text-primary); text-decoration: none;">Samsung Galaxy S26 Ultra leaked specs reveal major camera upgrade</a>
+                            </h4>
+                            <small style="color: var(--text-muted);">2 hours ago</small>
+                        </div>
+                        <div style="padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                            <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; line-height: 1.3;">
+                                <a href="#" style="color: var(--text-primary); text-decoration: none;">Google Pixel 9a spotted in benchmark tests</a>
+                            </h4>
+                            <small style="color: var(--text-muted);">4 hours ago</small>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; line-height: 1.3;">
+                                <a href="#" style="color: var(--text-primary); text-decoration: none;">OnePlus 13 Pro confirmed for global launch</a>
+                            </h4>
+                            <small style="color: var(--text-muted);">6 hours ago</small>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Ad Space -->
                 <div class="ad-space">
                     <h4>📢 Advertisement</h4>
@@ -398,33 +480,33 @@
                 
                 <!-- Newsletter -->
                 <div class="newsletter">
-                    <h3>📧 Weekly Tech Insights</h3>
-                    <p>Get our original analysis and reviews delivered to your inbox every week</p>
+                    <h3>📧 Weekly Mobile Insights</h3>
+                    <p>Get the latest smartphone reviews and mobile tech news delivered to your inbox</p>
                     <input type="email" placeholder="Enter your email address" id="newsletterEmail">
                     <button onclick="subscribeNewsletter()">Subscribe Free</button>
                 </div>
                 
-                <!-- Popular Articles Widget -->
+                <!-- Popular Reviews Widget -->
                 <div class="widget">
-                    <h3>🔥 Most Popular</h3>
+                    <h3>🔥 Popular Reviews</h3>
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <div style="padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
                             <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">
                                 <a href="/iphone-16-review.html" style="color: var(--text-primary); text-decoration: none;">iPhone 16 Pro: 30-Day Review</a>
                             </h4>
-                            <small style="color: var(--text-muted);">15,234 views</small>
+                            <small style="color: var(--text-muted);">⭐ 4.2/5 • 15,234 views</small>
                         </div>
                         <div style="padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
                             <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">
                                 <a href="/androidprivacyguide.html" style="color: var(--text-primary); text-decoration: none;">Android Privacy Guide</a>
                             </h4>
-                            <small style="color: var(--text-muted);">12,891 views</small>
+                            <small style="color: var(--text-muted);">📱 Essential • 12,891 views</small>
                         </div>
                         <div>
                             <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">
-                                <a href="/aiproductivitytools.html" style="color: var(--text-primary); text-decoration: none;">AI Tools That Actually Work</a>
+                                <a href="/budgetsmartphonecomparison.html" style="color: var(--text-primary); text-decoration: none;">Best Budget Phones 2026</a>
                             </h4>
-                            <small style="color: var(--text-muted);">9,567 views</small>
+                            <small style="color: var(--text-muted);">💰 Under $400 • 9,567 views</small>
                         </div>
                     </div>
                 </div>
@@ -440,15 +522,19 @@
         </div>
         
         <footer class="footer">
-            <p>&copy; 2026 TechInsights. All content is original and created by our editorial team.</p>
-            <div class="footer-links">
-                <a href="/privacy-policy.html">Privacy Policy</a>
-                <a href="/terms-of-service.html">Terms of Service</a>
-                <a href="mailto:contact@techinsights.com">Contact</a>
+            <div class="container">
+                <p>&copy; 2026 TechInsights. All content is original and created by our editorial team.</p>
+                <div class="footer-links">
+                    <a href="/privacy-policy.html">Privacy Policy</a>
+                    <a href="/terms-of-service.html">Terms of Service</a>
+                    <a href="mailto:contact@techinsights.com">Contact</a>
+                    <a href="#about">About Us</a>
+                    <a href="#advertise">Advertise</a>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+                    ✅ 100% Original Content • ✅ AdSense Compliant • ✅ Mobile-First Design
+                </p>
             </div>
-            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
-                ✅ 100% Original Content • ✅ AdSense Compliant • ✅ Legally Monetizable
-            </p>
         </footer>
     </div>
     
