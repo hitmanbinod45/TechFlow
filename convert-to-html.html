@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to HTML Converter</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .converter {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .input-section, .output-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .input-area, .output-area {
+            width: 100%;
+            min-height: 400px;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+        
+        .output-area {
+            background: #f9fafb;
+        }
+        
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+        }
+        
+        .btn-success {
+            background: #10b981;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .instructions {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .step {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-left: 4px solid #3b82f6;
+            background: #f8fafc;
+        }
+        
+        .step h3 {
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .converter {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Markdown to HTML Converter</h1>
+            <p>Convert your articles to HTML for easy publishing</p>
+        </div>
+        
+        <div class="converter">
+            <div class="input-section">
+                <h2>📄 Paste Markdown Content</h2>
+                <p>Copy content from articles/*.md files and paste here:</p>
+                <textarea class="input-area" id="markdownInput" placeholder="Paste your markdown content here...
+
+Example:
+# Article Title
+
+*Excerpt or subtitle*
+
+## Section Heading
+
+Your content here..."></textarea>
+                <button class="btn" onclick="convertToHTML()">🔄 Convert to HTML</button>
+                <button class="btn btn-success" onclick="loadSampleArticle()">📋 Load Sample Article</button>
+            </div>
+            
+            <div class="output-section">
+                <h2>🌐 HTML Output</h2>
+                <p>Copy this HTML and paste into your CMS:</p>
+                <textarea class="output-area" id="htmlOutput" readonly placeholder="HTML output will appear here..."></textarea>
+                <button class="btn" onclick="copyHTML()">📋 Copy HTML</button>
+                <button class="btn btn-success" onclick="downloadHTML()">💾 Download HTML File</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>📚 How to Use Your Articles</h2>
+            
+            <div class="step">
+                <h3>Step 1: Get the Article Content</h3>
+                <p>Open any file from the <code>articles/</code> folder in your project:</p>
+                <ul>
+                    <li><code>articles/article-1-iphone-16-review.md</code></li>
+                    <li><code>articles/article-2-android-privacy-guide.md</code></li>
+                    <li><code>articles/article-3-budget-smartphone-comparison.md</code></li>
+                    <li><code>articles/article-4-web-development-trends.md</code></li>
+                    <li><code>articles/article-5-ai-productivity-tools.md</code></li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h3>Step 2: Copy and Convert</h3>
+                <p>Copy the entire content from the .md file and paste it in the left box above, then click "Convert to HTML"</p>
+            </div>
+            
+            <div class="step">
+                <h3>Step 3: Publish</h3>
+                <p>Copy the HTML output and paste it into your publishing platform:</p>
+                <ul>
+                    <li><strong>WordPress:</strong> Posts → Add New → Text/HTML editor</li>
+                    <li><strong>Ghost:</strong> New Post → HTML card</li>
+                    <li><strong>Medium:</strong> New Story → Paste and format</li>
+                    <li><strong>Your Website:</strong> Create new HTML page</li>
+                </ul>
+            </div>
+            
+            <div class="step">
+                <h3>Step 4: Monetize</h3>
+                <p>Add these elements to start earning:</p>
+                <ul>
+                    <li>🔗 <strong>Affiliate links:</strong> Replace product mentions with affiliate URLs</li>
+                    <li>📧 <strong>Email signup:</strong> Add newsletter subscription form</li>
+                    <li>📱 <strong>Social sharing:</strong> Add share buttons</li>
+                    <li>💰 <strong>Ad spaces:</strong> Insert display ads between sections</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function convertToHTML() {
+            const markdown = document.getElementById('markdownInput').value;
+            if (!markdown.trim()) {
+                alert('Please paste some markdown content first!');
+                return;
+            }
+            
+            // Simple markdown to HTML conversion
+            let html = markdown
+                // Headers
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                
+                // Bold and italic
+                .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                
+                // Links
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+                
+                // Images
+                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0;">')
+                
+                // Code blocks
+                .replace(/```([\\s\\S]*?)```/g, '<pre style="background: #f3f4f6; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>$1</code></pre>')
+                .replace(/`([^`]+)`/g, '<code style="background: #f3f4f6; padding: 0.2rem 0.4rem; border-radius: 3px;">$1</code>')
+                
+                // Lists
+                .replace(/^\\* (.+)$/gim, '<li>$1</li>')
+                .replace(/^\\d+\\. (.+)$/gim, '<li>$1</li>')
+                
+                // Line breaks
+                .replace(/\\n\\n/g, '</p><p>')
+                .replace(/\\n/g, '<br>');
+            
+            // Wrap in paragraphs and clean up
+            html = '<p>' + html + '</p>';
+            html = html.replace(/<p><\/p>/g, '');
+            html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+            html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ul>|<ol>|<li>)/g, '$1');
+            html = html.replace(/(<\/ul>|<\/ol>|<\/li>)<\/p>/g, '$1');
+            
+            // Wrap lists
+            html = html.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
+            
+            // Create full HTML document
+            const fullHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - TechInsights</title>
+    <meta name="description" content="Original tech content from TechInsights">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            color: #1f2937;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            color: #374151;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        h3 {
+            color: #4b5563;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: #6b7280;
+        }
+        .cta {
+            background: #f3f4f6;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        .affiliate-notice {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 2rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        ${html}
+        
+        <div class="affiliate-notice">
+            <strong>Disclosure:</strong> This article may contain affiliate links. Purchasing through these links supports our independent testing at no cost to you.
+        </div>
+        
+        <div class="cta">
+            <h3>📧 Stay Updated</h3>
+            <p>Get the latest tech insights delivered to your inbox</p>
+            <!-- Add your newsletter signup form here -->
+        </div>
+    </article>
+</body>
+</html>`;
+            
+            document.getElementById('htmlOutput').value = fullHTML;
+        }
+        
+        function copyHTML() {
+            const htmlOutput = document.getElementById('htmlOutput');
+            htmlOutput.select();
+            document.execCommand('copy');
+            alert('HTML copied to clipboard! You can now paste it into your CMS.');
+        }
+        
+        function downloadHTML() {
+            const htmlContent = document.getElementById('htmlOutput').value;
+            if (!htmlContent.trim()) {
+                alert('Please convert some markdown content first!');
+                return;
+            }
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'article.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadSampleArticle() {
+            const sampleMarkdown = `# iPhone 16 Pro Review: The AI Revolution That Actually Delivers
+
+*After 30 days of real-world testing, here's what Apple got right (and wrong) with their most ambitious iPhone yet.*
+
+![iPhone 16 Pro](https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&h=400&fit=crop&auto=format)
+
+## The Bottom Line First
+
+**Rating: 4.2/5 ⭐⭐⭐⭐**
+
+The iPhone 16 Pro isn't just another incremental upgrade—it's Apple's first genuine leap into AI-powered mobile computing. After using it as my daily driver for a month, I can confidently say this is the most significant iPhone release since the iPhone X.
+
+**Who should buy it:** Power users, content creators, and anyone who wants cutting-edge AI features
+**Who should skip it:** Casual users happy with iPhone 14/15, budget-conscious buyers
+
+## What Makes This Different
+
+### The A18 Pro Chip: More Than Just Speed
+
+Everyone talks about benchmarks, but here's what actually matters: the A18 Pro's dedicated Neural Engine processes AI tasks 40% faster than the A17 Pro, and it shows in daily use.
+
+**Real-world impact:**
+- **Photo processing**: Live HDR adjustments happen instantly, no more waiting
+- **Voice transcription**: Siri now understands context from previous conversations
+- **App switching**: Zero lag even with 20+ apps open
+- **Battery efficiency**: AI optimizes power usage based on your habits
+
+---
+
+*This is a sample of the full article. The complete version is available in the articles/ folder.*`;
+            
+            document.getElementById('markdownInput').value = sampleMarkdown;
+        }
+        
+        console.log('✅ Markdown to HTML Converter loaded');
+        console.log('📝 Paste your article content and convert to HTML');
+    </script>
+</body>
+</html>
