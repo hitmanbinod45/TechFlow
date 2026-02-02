@@ -629,15 +629,41 @@
     <header class="header">
         <div class="header-content">
             <div class="logo-section">
-                <div>
+                <a href="/" onclick="window.location.href='/'">
                     <h1>📱 TechInsights</h1>
                     <p class="tagline">Mobile Reviews, News & Specifications</p>
+                </a>
+            </div>
+            <div class="header-widgets">
+                <div class="time-widget" id="timeWidget">
+                    <span id="currentTime">--:--</span>
+                    <div class="time-tooltip" id="timeTooltip">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--gsm-blue);">World Clock</h4>
+                        <div id="worldTimes"></div>
+                    </div>
                 </div>
-                <div class="header-widgets">
-                    <a href="/" class="back-link">← Back to Home</a>
-                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                        <span id="themeIcon">🌙</span>
-                    </button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <div class="auth-section" id="authSection">
+                    <button class="auth-btn" onclick="showLoginModal()">Sign In</button>
+                    <button class="auth-btn signup" onclick="showRegisterModal()">Sign Up</button>
+                </div>
+                <div class="user-section" id="userSection" style="display: none;">
+                    <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">
+                        <span id="userInitial">U</span>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div style="padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem;">
+                                <strong id="userDisplayName">User</strong>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);" id="userEmail">user@example.com</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <button onclick="viewProfile()" style="background: none; border: none; color: var(--text-primary); text-align: left; padding: 0.5rem; cursor: pointer; border-radius: 4px; transition: background 0.2s;">👤 Profile</button>
+                                <button onclick="viewFavorites()" style="background: none; border: none; color: var(--text-primary); text-align: left; padding: 0.5rem; cursor: pointer; border-radius: 4px; transition: background 0.2s;">⭐ Favorites</button>
+                                <button onclick="logout()" style="background: none; border: none; color: var(--text-primary); text-align: left; padding: 0.5rem; cursor: pointer; border-radius: 4px; transition: background 0.2s;">🚪 Logout</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
