@@ -54,6 +54,7 @@
             --text-muted: #b0b0b0;
             --border: #404040;
             --shadow: rgba(0,0,0,0.3);
+            --gsm-light-blue: #2d4a66;
         }
         
         body {
@@ -189,6 +190,50 @@
         
         .nav-menu a:hover {
             background: rgba(255,255,255,0.1);
+        }
+        
+        .auth-section {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .auth-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .auth-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+        
+        .auth-btn.signup {
+            background: white;
+            color: var(--gsm-blue);
+        }
+        
+        .auth-btn.signup:hover {
+            background: #f8f9fa;
+        }
+        
+        .user-section {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .welcome-text {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
         
 
@@ -573,6 +618,14 @@
                     <a href="#news">News</a>
                     <a href="#compare">Compare</a>
                     <a href="#specs">Specs</a>
+                    <div class="auth-section" id="authSection">
+                        <button class="auth-btn" onclick="showLogin()">Sign In</button>
+                        <button class="auth-btn signup" onclick="showRegister()">Sign Up</button>
+                    </div>
+                    <div class="user-section" id="userSection" style="display: none;">
+                        <span class="welcome-text" id="welcomeText">Welcome, User!</span>
+                        <button class="auth-btn" onclick="logout()">Logout</button>
+                    </div>
                 </nav>
             </div>
         </div>
@@ -592,7 +645,7 @@
                             <span>•</span>
                             <span>Feb 1, 2026</span>
                         </div>
-                        <h2>iPhone 16 Pro Review: The AI Revolution That Actually Delivers</h2>
+                        <h2><a href="/iphone-16-review.html" style="color: var(--text-primary); text-decoration: none;">iPhone 16 Pro Review: The AI Revolution That Actually Delivers</a></h2>
                         <p>After 30 days of real-world testing, here's what Apple got right (and wrong) with their most ambitious iPhone yet. We dive deep into the A18 Pro chip's AI capabilities, camera improvements, and whether the premium price tag is justified.</p>
                         <p><strong>Key highlights:</strong> 40% faster AI processing, improved camera system, better battery optimization, and genuine productivity improvements that justify the upgrade.</p>
                         <a href="/iphone-16-review.html" class="read-more">Read Full Review →</a>
@@ -606,7 +659,7 @@
                             <span>•</span>
                             <span>Jan 31, 2026</span>
                         </div>
-                        <h2>The Complete Android Privacy Guide: Protect Your Data in 2026</h2>
+                        <h2><a href="/androidprivacyguide.html" style="color: var(--text-primary); text-decoration: none;">The Complete Android Privacy Guide: Protect Your Data in 2026</a></h2>
                         <p>Your Android phone collects more data than you realize. Here's how to take back control of your privacy without sacrificing functionality. Complete guide covering app permissions, network security, and data encryption.</p>
                         <a href="/androidprivacyguide.html" class="read-more">Read Privacy Guide →</a>
                     </article>
@@ -618,7 +671,7 @@
                             <span>•</span>
                             <span>Jan 30, 2026</span>
                         </div>
-                        <h2>Best Budget Smartphones 2026: Flagship Features for Less</h2>
+                        <h2><a href="/budgetsmartphonecomparison.html" style="color: var(--text-primary); text-decoration: none;">Best Budget Smartphones 2026: Flagship Features for Less</a></h2>
                         <p>You don't need to spend $1000+ for a great smartphone experience. We tested 15 budget phones under $400 to find the ones that deliver premium features without the premium price tag.</p>
                         <a href="/budgetsmartphonecomparison.html" class="read-more">Read Comparison →</a>
                     </article>
@@ -630,7 +683,7 @@
                             <span>•</span>
                             <span>Jan 29, 2026</span>
                         </div>
-                        <h2>Web Development Trends 2026: What's Shaping the Future</h2>
+                        <h2><a href="/webdevelopmenttrends.html" style="color: var(--text-primary); text-decoration: none;">Web Development Trends 2026: What's Shaping the Future</a></h2>
                         <p>From AI-powered development tools to the rise of WebAssembly, the web development landscape is evolving rapidly. Here are the trends that will define the next year of web development.</p>
                         <a href="/webdevelopmenttrends.html" class="read-more">Read Analysis →</a>
                     </article>
@@ -642,7 +695,7 @@
                             <span>•</span>
                             <span>Jan 28, 2026</span>
                         </div>
-                        <h2>AI Productivity Tools That Actually Save Time (Not Hype)</h2>
+                        <h2><a href="/aiproductivitytools.html" style="color: var(--text-primary); text-decoration: none;">AI Productivity Tools That Actually Save Time (Not Hype)</a></h2>
                         <p>Cut through the AI hype with our tested recommendations for productivity tools that genuinely improve your workflow. We spent 3 months testing 50+ AI tools to find the ones worth your time and money.</p>
                         <a href="/aiproductivitytools.html" class="read-more">Read Tool Guide →</a>
                     </article>
@@ -799,6 +852,69 @@
         
         timeTooltip.addEventListener('click', (e) => {
             e.stopPropagation();
+        });
+        
+        // User Authentication System
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        let currentUser = localStorage.getItem('currentUser') || null;
+        
+        // Initialize auth state
+        function initializeAuth() {
+            const authSection = document.getElementById('authSection');
+            const userSection = document.getElementById('userSection');
+            const welcomeText = document.getElementById('welcomeText');
+            
+            if (isLoggedIn && currentUser) {
+                authSection.style.display = 'none';
+                userSection.style.display = 'flex';
+                welcomeText.textContent = `Welcome, ${currentUser}!`;
+            } else {
+                authSection.style.display = 'flex';
+                userSection.style.display = 'none';
+            }
+        }
+        
+        // Show login
+        function showLogin() {
+            const username = prompt('Enter username (demo: use any name)');
+            if (username && username.trim()) {
+                isLoggedIn = true;
+                currentUser = username.trim();
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', currentUser);
+                initializeAuth();
+                alert(`Welcome back, ${currentUser}! You can now interact with articles.`);
+            }
+        }
+        
+        // Show register
+        function showRegister() {
+            const username = prompt('Choose a username (demo: use any name)');
+            if (username && username.trim()) {
+                isLoggedIn = true;
+                currentUser = username.trim();
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', currentUser);
+                initializeAuth();
+                alert(`Account created! Welcome, ${currentUser}! You can now interact with articles.`);
+            }
+        }
+        
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                isLoggedIn = false;
+                currentUser = null;
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('currentUser');
+                initializeAuth();
+                alert('You have been logged out successfully.');
+            }
+        }
+        
+        // Initialize auth on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAuth();
         });
         
         // Newsletter subscription
