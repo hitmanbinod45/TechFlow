@@ -191,14 +191,7 @@
             background: rgba(255,255,255,0.1);
         }
         
-        .monetization-notice {
-            background: var(--success);
-            color: white;
-            padding: 0.75rem 1rem;
-            text-align: center;
-            font-weight: 500;
-            font-size: 0.85rem;
-        }
+
         
         .content-wrapper {
             padding: 1rem 0;
@@ -585,9 +578,7 @@
         </div>
     </header>
     
-    <div class="monetization-notice">
-        <strong>✅ 100% ORIGINAL CONTENT:</strong> Professional mobile tech analysis & reviews
-    </div>
+
     
     <div class="container">
         <div class="content-wrapper">
@@ -597,8 +588,6 @@
                     <article class="featured-article">
                         <div class="article-meta">
                             <span class="featured-badge">Featured Review</span>
-                            <span>By TechInsights Team</span>
-                            <span>•</span>
                             <span>12 min read</span>
                             <span>•</span>
                             <span>Feb 1, 2026</span>
@@ -613,8 +602,6 @@
                     <article class="article">
                         <div class="article-meta">
                             <span class="article-category">Privacy Guide</span>
-                            <span>By Security Team</span>
-                            <span>•</span>
                             <span>8 min read</span>
                             <span>•</span>
                             <span>Jan 31, 2026</span>
@@ -627,8 +614,6 @@
                     <article class="article">
                         <div class="article-meta">
                             <span class="article-category">Comparison</span>
-                            <span>By Review Team</span>
-                            <span>•</span>
                             <span>10 min read</span>
                             <span>•</span>
                             <span>Jan 30, 2026</span>
@@ -641,8 +626,6 @@
                     <article class="article">
                         <div class="article-meta">
                             <span class="article-category">Industry Analysis</span>
-                            <span>By Tech Analysts</span>
-                            <span>•</span>
                             <span>6 min read</span>
                             <span>•</span>
                             <span>Jan 29, 2026</span>
@@ -655,8 +638,6 @@
                     <article class="article">
                         <div class="article-meta">
                             <span class="article-category">Productivity</span>
-                            <span>By Productivity Team</span>
-                            <span>•</span>
                             <span>9 min read</span>
                             <span>•</span>
                             <span>Jan 28, 2026</span>
@@ -672,15 +653,15 @@
                     <div class="widget">
                         <h3>📰 Latest Tech News</h3>
                         <div class="widget-item">
-                            <h4><a href="#">Samsung Galaxy S26 Ultra leaked specs reveal major camera upgrade</a></h4>
+                            <h4><a href="#" onclick="openNewsArticle('samsung-s26-ultra-leak')">Samsung Galaxy S26 Ultra leaked specs reveal major camera upgrade</a></h4>
                             <small>2 hours ago</small>
                         </div>
                         <div class="widget-item">
-                            <h4><a href="#">Google Pixel 9a spotted in benchmark tests</a></h4>
+                            <h4><a href="#" onclick="openNewsArticle('pixel-9a-benchmark')">Google Pixel 9a spotted in benchmark tests</a></h4>
                             <small>4 hours ago</small>
                         </div>
                         <div class="widget-item">
-                            <h4><a href="#">OnePlus 13 Pro confirmed for global launch</a></h4>
+                            <h4><a href="#" onclick="openNewsArticle('oneplus-13-pro-launch')">OnePlus 13 Pro confirmed for global launch</a></h4>
                             <small>6 hours ago</small>
                         </div>
                     </div>
@@ -832,6 +813,19 @@
             } else {
                 alert('Please enter a valid email address.');
             }
+        }
+        
+        // News article click handler
+        function openNewsArticle(articleId) {
+            // For now, show alert - you can implement actual news pages later
+            const newsArticles = {
+                'samsung-s26-ultra-leak': 'Samsung Galaxy S26 Ultra: 200MP main camera, 50MP ultrawide, 12MP telephoto with 10x zoom. Expected launch: March 2026.',
+                'pixel-9a-benchmark': 'Google Pixel 9a benchmarks show Tensor G4 chip, 8GB RAM, scoring 850,000 on AnTuTu.',
+                'oneplus-13-pro-launch': 'OnePlus 13 Pro global launch confirmed for February 15, 2026. Features Snapdragon 8 Gen 4, 6000mAh battery.'
+            };
+            
+            alert(newsArticles[articleId] || 'News article coming soon!');
+            console.log('News clicked:', articleId);
         }
         
         // Article click tracking
